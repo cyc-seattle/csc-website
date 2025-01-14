@@ -1,14 +1,13 @@
 /* CSS reference: https://www.wix.com/velo/reference/$w/styling-elements-with-css */
 
-/* These CSS styles will be applied globally to every page of this site. Write your CSS here, e.g.:
-toof
-*/
+/* These CSS styles will be applied globally to every page of this site. Write your CSS here, e.g.*/
 
-.gutter {
-    border: 1px solid red;
+:root {
+    --content-max-width: 1280px;
 }
 
-/*  Change button background color to red: */
-/* .button {
-    background-color: red;
-} */
+/* Center and set all sections to a maximum width */
+section {
+    max-width: var(--content-max-width);
+    left: calc((100vw - var(--content-max-width)) / 2);
+}
