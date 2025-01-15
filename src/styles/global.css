@@ -7,7 +7,10 @@
 }
 
 /* Center and set all sections to a maximum width */
+/* Removing for now as this breaks on tablet/phone */
+/*
 section {
     max-width: var(--content-max-width);
     left: calc((100vw - var(--content-max-width)) / 2);
 }
+*/
