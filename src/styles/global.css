@@ -6,11 +6,12 @@
     --content-max-width: 1280px;
 }
 
-/* Center and set all sections to a maximum width */
-/* Removing for now as this breaks on tablet/phone */
-/*
-section {
-    max-width: var(--content-max-width);
-    left: calc((100vw - var(--content-max-width)) / 2);
+/* Standardize button styling */
+.button {
+    border-radius: 10px;
+    padding: 0.5rem 2rem;
 }
-*/
+.button__label {
+    /* Fix button text to be responsive: https://www.youtube.com/watch?v=NY7fDw0_9Xs */
+    font-size: clamp(1rem, 0.975rem + 0.125vw, 1.125rem);
+}
