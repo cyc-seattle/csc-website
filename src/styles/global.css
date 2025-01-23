@@ -8,8 +8,8 @@
 
 /* Standardize button styling */
 .button {
-    border-radius: 10px;
-    padding: 0.5rem 2rem;
+    border-radius: 5px;
+        /*padding: 0.5rem 2rem;*/
 }
 .button__label {
     /* Fix button text to be responsive: https://www.youtube.com/watch?v=NY7fDw0_9Xs */
