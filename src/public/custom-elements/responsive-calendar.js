@@ -22,12 +22,14 @@ class ResponsiveCalendarElement extends HTMLElement {
     }
 
     connectedCallback() {
+        console.log("connected");
         const style = document.createElement("style");
         style.innerHTML = STYLE;
         this.appendChild(style);
 
         const frame = document.createElement("iframe");
-        frame.src = "https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=America%2FLos_Angeles&showPrint=0&showTitle=0&showTz=0&src=Y185YmUxMzgwMWY1MjU4OTlmYWRiMjJiZGQxMzI2NTc5NzA2ZWE2NjY3ZTQ1NjBlZmI0ZWY0ZTE4YmUxNTY4ZWU2QGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20&src=Y181NGY5OTY3OTk4MzA5NDk4OWI0NTZmZDc1MDZiNWQyMzYyMTk4MjU2ZDk3MDlmMzkyYmJiYjFkZTJkZTI0YzRjQGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20&src=Y185ZDQ5NDhiNmM1OTFjZTZlMmNkOTY5MjUzNDIxYTYzM2RhYThmOTc2Nzc0NDlmZjgyYTBhMDRiMTRkNmYzY2ZiQGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20";
+        frame.className = "responsive-frame";
+        frame.src = this.src;
 
         const container = document.createElement("div");
         container.className = "responsive-calendar";
@@ -37,7 +39,13 @@ class ResponsiveCalendarElement extends HTMLElement {
 
     attributeChangedCallback(name, oldValue, newValue) {
         if (name === "src") {
-            this.querySelector("iframe").src = newValue;
+            console.debug(`Updating iframe src to: ${newValue}`);
+            this.src = newValue;
+
+            const iframe = this.querySelector("iframe");
+            if (iframe) {
+                iframe.src = newValue;
+            }
         }
     }
 
