@@ -1,0 +1,44 @@
+---
+import Base from "../../layouts/Base.astro";
+import Banner from "../../components/Banner.astro";
+import Markdown from "../../components/Markdown.astro";
+import ProgramCard from "../../components/ProgramCard.astro";
+import StatusNotice from "../../components/StatusNotice.astro";
+import Faqs from "../../components/Faqs.astro";
+import Profiles from "../../components/Profiles.astro";
+import Gallery from "../../components/Gallery.astro";
+import { categories, type Category } from "../../lib/content.ts";
+
+export function getStaticPaths() {
+  return categories.map((category) => ({ params: { slug: category.slug }, props: { category } }));
+}
+const { category: c } = Astro.props as { category: Category };
+---
+
+<Base title={c.title} description={c.summary} shareImage={c.image}>
+  <Banner title={c.title} image={c.banner ?? c.image} />
+  <StatusNotice status={c.status} />
+  <section class="mx-auto max-w-4xl px-4 pt-6 text-center">
+    <Markdown source={c.top} class="mx-auto text-center" />
+  </section>
+  {c.programs.length > 0 && (
+    <section class="mx-auto max-w-6xl space-y-8 px-4 py-10">
+      {c.programs.map((p, i) => (
+        <ProgramCard program={p} status={c.status} flip={i % 2 === 1} />
+      ))}
+    </section>
+  )}
+  {c.testimonial && (
+    <figure class="mx-auto my-6 max-w-3xl px-4 text-center">
+      <blockquote class="text-xl italic leading-relaxed text-navy">“{c.testimonial}”</blockquote>
+    </figure>
+  )}
+  {c.bottom && (
+    <section class="mx-auto max-w-5xl overflow-x-auto px-4 py-10">
+      <Markdown source={c.bottom} />
+    </section>
+  )}
+  <Faqs topics={c.faqTopics} />
+  <Profiles compact title="Meet Our Crew" items={c.profiles} />
+  <Gallery ids={c.gallery} />
+</Base>

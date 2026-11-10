@@ -1,0 +1,214 @@
+---
+// The fixed pages: Contact, Our Crew, Scholarships, Donate, Sponsorships, Newsletter, Calendar, Corinthian Yacht Club.
+// Their words come from website_pages. A few add a list from another collection.
+import Base from "../layouts/Base.astro";
+import Banner from "../components/Banner.astro";
+import Markdown from "../components/Markdown.astro";
+import Img from "../components/Img.astro";
+import Faqs from "../components/Faqs.astro";
+import Profiles from "../components/Profiles.astro";
+import { pages, profiles, sponsorLevels, sponsors, categories, settings, dollars, type Page } from "../lib/content.ts";
+
+export function getStaticPaths() {
+  return pages.filter((p) => p.slug !== "home").map((page) => ({ params: { page: page.slug }, props: { page } }));
+}
+const { page: p } = Astro.props as { page: Page };
+const group = (name: string) => profiles.filter((x) => x.groups.includes(name));
+---
+
+<Base title={p.title} description={p.description} shareImage={p.image ?? p.banner}>
+  <Banner title={p.title} image={p.banner} />
+
+  <section class="mx-auto max-w-5xl px-4 py-12">
+    <div class:list={["grid items-start gap-10", p.image && "md:grid-cols-2"]}>
+      <div>
+        {p.body && <Markdown source={p.body} />}
+        {p.action && (
+          <a class="button mt-6" href={p.action.href}>
+            {p.action.label}
+          </a>
+        )}
+      </div>
+      {p.image && <Img id={p.image} class="w-full rounded-2xl shadow-md" />}
+    </div>
+
+    {p.slug === "contact-us" && (
+      <form class="mt-10 grid max-w-2xl gap-4 rounded-2xl bg-sand p-6 sm:grid-cols-2" onsubmit="return false">
+        <p class="rounded-lg bg-white px-4 py-3 text-sm sm:col-span-2">
+          This form isn't connected yet. Email us at{" "}
+          <a class="font-bold text-navy underline" href={`mailto:${settings.email}`}>
+            {settings.email}
+          </a>{" "}
+          instead.
+        </p>
+        <label class="grid gap-1 text-sm font-bold text-navy">
+          First name
+          <input
+            class="rounded-lg border border-slate-300 px-3 py-2 font-normal"
+            name="first_name"
+            autocomplete="given-name"
+          />
+        </label>
+        <label class="grid gap-1 text-sm font-bold text-navy">
+          Last name
+          <input
+            class="rounded-lg border border-slate-300 px-3 py-2 font-normal"
+            name="last_name"
+            autocomplete="family-name"
+          />
+        </label>
+        <label class="grid gap-1 text-sm font-bold text-navy">
+          Email
+          <input
+            class="rounded-lg border border-slate-300 px-3 py-2 font-normal"
+            type="email"
+            name="email"
+            required
+            autocomplete="email"
+          />
+        </label>
+        <label class="grid gap-1 text-sm font-bold text-navy">
+          Phone
+          <input
+            class="rounded-lg border border-slate-300 px-3 py-2 font-normal"
+            type="tel"
+            name="phone"
+            autocomplete="tel"
+          />
+        </label>
+        <label class="grid gap-1 text-sm font-bold text-navy sm:col-span-2">
+          Message
+          <textarea
+            class="min-h-32 rounded-lg border border-slate-300 px-3 py-2 font-normal"
+            name="message"
+            required
+          ></textarea>
+        </label>
+        <button class="button sm:col-span-2 sm:justify-self-start" type="submit" disabled>
+          Send
+        </button>
+      </form>
+    )}
+
+    {p.slug === "newsletter" && (
+      <form class="mt-10 grid max-w-2xl gap-4 rounded-2xl bg-sand p-6 sm:grid-cols-2" onsubmit="return false">
+        <p class="rounded-lg bg-white px-4 py-3 text-sm sm:col-span-2">
+          Newsletter signup isn't connected yet. Check back soon.
+        </p>
+        <label class="grid gap-1 text-sm font-bold text-navy">
+          First name
+          <input
+            class="rounded-lg border border-slate-300 px-3 py-2 font-normal"
+            name="first_name"
+            autocomplete="given-name"
+          />
+        </label>
+        <label class="grid gap-1 text-sm font-bold text-navy">
+          Last name
+          <input
+            class="rounded-lg border border-slate-300 px-3 py-2 font-normal"
+            name="last_name"
+            autocomplete="family-name"
+          />
+        </label>
+        <label class="grid gap-1 text-sm font-bold text-navy sm:col-span-2">
+          Email
+          <input
+            class="rounded-lg border border-slate-300 px-3 py-2 font-normal"
+            type="email"
+            name="email"
+            required
+            autocomplete="email"
+          />
+        </label>
+        <label class="flex items-center gap-2 text-sm sm:col-span-2">
+          <input type="checkbox" name="consent" required /> Yes, subscribe me to your newsletter.
+        </label>
+        <button class="button sm:col-span-2 sm:justify-self-start" type="submit" disabled>
+          Subscribe
+        </button>
+      </form>
+    )}
+
+    {p.sections.length > 0 && (
+      <div class="mt-4 grid gap-8 md:grid-cols-3">
+        {p.sections.map((s) => (
+          <article class="overflow-hidden rounded-2xl bg-white shadow-md ring-1 ring-slate-100">
+            <Img
+              id={s.image}
+              widths={[400, 800]}
+              sizes="(min-width: 768px) 33vw, 100vw"
+              class="aspect-[4/3] w-full object-cover"
+            />
+            <div class="p-6">
+              <h2 class="text-xl font-black text-navy">{s.title}</h2>
+              <Markdown source={s.body} class="mt-2 prose-sm" />
+              {s.action && (
+                <a class="button mt-4" href={s.action.href}>
+                  {s.action.label}
+                </a>
+              )}
+            </div>
+          </article>
+        ))}
+      </div>
+    )}
+
+    {p.slug === "sponsorships" && (
+      <>
+        <h2 class="mt-14 text-center text-3xl font-black text-navy">Sponsorship Levels</h2>
+        <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {sponsorLevels.map((l) => (
+            <article class="rounded-2xl border-t-4 border-signal bg-sand p-6">
+              <h3 class="text-xl font-black text-navy">{l.name}</h3>
+              <p class="text-2xl font-black text-signal">{dollars(l.amountCents)}</p>
+              <Markdown source={l.benefits} class="mt-2 prose-sm text-slate-600" />
+            </article>
+          ))}
+        </div>
+        <h2 class="mt-14 text-center text-3xl font-black text-navy">Thanks to Our Sponsors</h2>
+        <div class="mt-6 flex flex-wrap items-center justify-center gap-10">
+          {sponsors.map((s) => (
+            <a href={s.url} class="block" title={s.level ? `${s.name} (${s.level})` : s.name}>
+              <Img id={s.logo} alt={s.name} widths={[320]} sizes="320px" class="h-16 w-auto" />
+            </a>
+          ))}
+        </div>
+      </>
+    )}
+
+    {p.slug === "calendar" && (
+      <div class="mt-8 space-y-6">
+        {categories.map((c) => (
+          <div>
+            <h2 class="text-xl font-black text-navy">
+              <a class="hover:underline" href={`/program-category/${c.slug}`}>
+                {c.title}
+              </a>
+            </h2>
+            <ul class="mt-1 list-disc pl-6">
+              {c.programs.map((x) => (
+                <li>
+                  <a class="text-navy hover:underline" href={`/program/${x.slug}`}>
+                    {x.title}
+                  </a>{" "}
+                  <span class="text-slate-500">{x.subtitle}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    )}
+  </section>
+
+  {p.slug === "our-crew" && (
+    <>
+      <Profiles title="Staff" items={group("staff")} />
+      <Profiles title="Our Board of Directors" items={group("officers")} />
+      <Profiles title="Our Junior Racing Coaches" items={group("coach")} />
+      <Profiles title="Our Sailing Instructors" items={group("instructor")} />
+    </>
+  )}
+  <Faqs topics={p.faqTopics} />
+</Base>

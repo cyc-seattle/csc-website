@@ -1,0 +1,18 @@
+---
+import { marked } from "marked";
+
+interface Props {
+  source: string;
+  class?: string;
+}
+const { source, class: className } = Astro.props;
+// The content comes from our own Directus, written by staff's coding agents, so its HTML is trusted.
+const html = source ? await marked.parse(source) : "";
+---
+
+{html && (
+  <div
+    class:list={["prose max-w-none prose-slate prose-headings:text-navy prose-a:text-navy", className]}
+    set:html={html}
+  />
+)}

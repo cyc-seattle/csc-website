@@ -1,0 +1,36 @@
+---
+import { Image } from "astro:assets";
+import { image } from "../lib/content.ts";
+
+interface Props {
+  id: string | undefined;
+  /** Leave it out to use the picture's description from Directus. Pass "" for a picture that only decorates. */
+  alt?: string;
+  widths?: number[];
+  sizes?: string;
+  class?: string;
+  loading?: "eager" | "lazy";
+}
+const {
+  id,
+  alt,
+  widths = [480, 800, 1200],
+  sizes = "(min-width: 1024px) 50vw, 100vw",
+  class: className,
+  loading = "lazy",
+} = Astro.props;
+const picture = image(id);
+---
+
+{picture && (
+  <Image
+    src={picture.src}
+    alt={alt ?? picture.alt}
+    widths={widths}
+    sizes={sizes}
+    class={className}
+    loading={loading}
+    format="webp"
+    quality={75}
+  />
+)}

@@ -1,0 +1,22 @@
+---
+import Base from "../../layouts/Base.astro";
+import Markdown from "../../components/Markdown.astro";
+import { policies, policyVersion, type Policy } from "../../lib/content.ts";
+
+export function getStaticPaths() {
+  return policies
+    .filter((p) => p.versions.length > 0)
+    .map((policy) => ({ params: { slug: policy.slug }, props: { policy } }));
+}
+const { policy } = Astro.props as { policy: Policy };
+const version = policyVersion(policy)!;
+const effective = new Date(`${version.effective}T12:00:00`).toLocaleDateString("en-US", { dateStyle: "long" });
+---
+
+<Base title={policy.title}>
+  <article class="mx-auto max-w-3xl px-4 py-12">
+    <h1 class="text-4xl font-black text-navy">{version.title}</h1>
+    <p class="mt-2 text-sm font-bold uppercase tracking-wide text-signal">Effective {effective}</p>
+    <Markdown source={version.body} class="mt-8" />
+  </article>
+</Base>

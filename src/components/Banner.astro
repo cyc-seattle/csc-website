@@ -1,0 +1,27 @@
+---
+import Img from "./Img.astro";
+
+interface Props {
+  title: string;
+  image: string | undefined;
+  tall?: boolean;
+}
+const { title, image, tall = false } = Astro.props;
+---
+
+<section
+  class:list={[
+    "relative isolate flex items-center justify-center overflow-hidden bg-navy",
+    tall ? "h-72 sm:h-[28rem]" : "h-44 sm:h-64",
+  ]}
+>
+  <Img
+    id={image}
+    alt=""
+    widths={[640, 1280, 1920]}
+    sizes="100vw"
+    loading="eager"
+    class="absolute inset-0 -z-10 h-full w-full object-cover opacity-60"
+  />
+  <h1 class="px-4 text-center text-4xl font-black text-white drop-shadow-lg sm:text-6xl">{title}</h1>
+</section>

@@ -14,13 +14,27 @@
     "url": "git+https://github.com/cyc-seattle/csc-website.git"
   },
   "packageManager": "pnpm@10.34.9",
-  "prettier": "@cyc-seattle/ts-config/prettier",
   "devDependencies": {
+    "@astrojs/check": "^0.9.12",
     "@cyc-seattle/ts-config": "^0.1.2",
+    "@playwright/test": "^1.65.0",
     "@types/node": "^22.20.5",
     "eslint": "^9.39.5",
+    "eslint-plugin-astro": "^3.2.1",
     "prettier": "^3.9.10",
+    "prettier-plugin-astro": "^1.1.2",
     "typescript": "~5.9.3",
     "vitest": "^5.1.0"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.4",
+    "@directus/sdk": "^27.1.0",
+    "@fontsource/lato": "^5.3.0",
+    "@tailwindcss/typography": "^0.5.20",
+    "@tailwindcss/vite": "^4.3.5",
+    "astro": "^7.4.8",
+    "marked": "^18.2.0",
+    "sharp": "^0.35.5",
+    "tailwindcss": "^4.3.5"
   }
 }

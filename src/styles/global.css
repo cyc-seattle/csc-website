@@ -1,0 +1,42 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@import "@fontsource/lato/400.css";
+@import "@fontsource/lato/700.css";
+@import "@fontsource/lato/900.css";
+
+@theme {
+  --font-sans: "Lato", ui-sans-serif, system-ui, sans-serif;
+  --color-navy: #232a5c;
+  --color-navy-dark: #171c40;
+  --color-signal: #d42a2f;
+  --color-sea: #e8f1f5;
+  --color-sand: #f6f4ef;
+}
+
+@layer base {
+  html {
+    @apply scroll-smooth text-slate-800 antialiased;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-signal;
+  }
+}
+
+@layer components {
+  .button {
+    @apply inline-flex items-center justify-center rounded-full bg-signal px-6 py-2.5 font-bold text-white shadow-sm transition hover:bg-red-700;
+  }
+  .button-quiet {
+    @apply inline-flex items-center justify-center rounded-full border-2 border-navy px-6 py-2 font-bold text-navy transition hover:bg-navy hover:text-white;
+  }
+  .prose table {
+    @apply text-sm;
+  }
+  .prose td,
+  .prose th {
+    @apply border border-slate-200 px-2 py-1 text-center;
+  }
+  .prose video {
+    @apply w-full rounded-lg;
+  }
+}

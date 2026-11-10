@@ -1,0 +1,57 @@
+---
+import Base from "../../layouts/Base.astro";
+import Banner from "../../components/Banner.astro";
+import Markdown from "../../components/Markdown.astro";
+import StatusNotice from "../../components/StatusNotice.astro";
+import Gallery from "../../components/Gallery.astro";
+import Img from "../../components/Img.astro";
+import { programs, categoryOf, programAction, type Program } from "../../lib/content.ts";
+
+export function getStaticPaths() {
+  return programs.map((program) => ({ params: { slug: program.slug }, props: { program } }));
+}
+const { program: p } = Astro.props as { program: Program };
+const category = categoryOf(p.slug);
+const status = category?.status ?? "closed";
+// On its own page, a program's button only ever signs people up.
+const action = programAction(p, status);
+const register = action.href.startsWith("http") ? action : undefined;
+---
+
+<Base title={p.title} description={p.summary} shareImage={p.cardImage}>
+  <Banner title={p.title} image={p.banner ?? p.cardImage} />
+  <div class="mx-auto max-w-4xl px-4">
+    {category && (
+      <nav class="pt-6 text-sm" aria-label="Breadcrumb">
+        <a class="font-bold text-navy hover:underline" href={`/program-category/${category.slug}`}>
+          ← {category.title}
+        </a>
+      </nav>
+    )}
+    <div class="flex flex-wrap items-center justify-between gap-4 py-6">
+      {p.subtitle && <p class="text-xl font-bold uppercase tracking-wide text-signal">{p.subtitle}</p>}
+      {register && (
+        <a class="button" href={register.href}>
+          {register.label}
+        </a>
+      )}
+    </div>
+    <StatusNotice status={status} />
+    {p.body ? (
+      <Markdown source={p.body} />
+    ) : (
+      <div class="grid items-start gap-8 md:grid-cols-2">
+        <p class="text-lg leading-relaxed">{p.summary}</p>
+        <Img id={p.cardImage} alt={p.title} class="w-full rounded-2xl shadow-md" />
+      </div>
+    )}
+    {register && (
+      <p class="py-8 text-center">
+        <a class="button" href={register.href}>
+          {register.label}
+        </a>
+      </p>
+    )}
+  </div>
+  <Gallery ids={p.gallery} />
+</Base>

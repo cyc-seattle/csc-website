@@ -1,2 +1,7 @@
 pnpm-lock.yaml
 dist
+.astro
+.content
+test-results
+playwright-report
+screenshots

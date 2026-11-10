@@ -1,0 +1,766 @@
+{
+  "website_settings": {
+    "id": "00000000-0000-4000-8010-000000000001",
+    "name": "CYC Community Sailing Center",
+    "description": "Made-up test content. A sailing center on the water, with summer camps, race teams, and classes for adults.",
+    "email": "hello@example.org",
+    "phone": "206-555-0100",
+    "address": "100 Example Way NW\nSeattle, WA 98000",
+    "map_url": "https://maps.example.org/sailing-center",
+    "ein": "00-0000000",
+    "social": [
+      {
+        "label": "Instagram",
+        "url": "https://instagram.example.org/sailing-center"
+      },
+      {
+        "label": "Facebook",
+        "url": "https://facebook.example.org/sailing-center"
+      }
+    ],
+    "announcement": "Test announcement: **summer camp sign-ups** open soon.",
+    "logo": "00000000-0000-4000-8000-000000000001",
+    "badge": "00000000-0000-4000-8000-000000000002",
+    "menu": [
+      {
+        "label": "About Us",
+        "items": [
+          {
+            "label": "Contact Us",
+            "href": "/contact-us"
+          },
+          {
+            "label": "Event Calendar",
+            "href": "/calendar"
+          },
+          {
+            "label": "Our Crew",
+            "href": "/our-crew"
+          },
+          {
+            "label": "Scholarships",
+            "href": "/scholarships"
+          },
+          {
+            "label": "Corinthian Yacht Club",
+            "href": "/corinthian-yacht-club"
+          }
+        ]
+      },
+      {
+        "label": "Programs",
+        "items": [
+          {
+            "label": "Summer Sailing Camps",
+            "href": "/program-category/summer-camp"
+          },
+          {
+            "label": "Junior Race Teams",
+            "href": "/program-category/junior-race-teams"
+          },
+          {
+            "label": "Community Boating",
+            "href": "/program-category/community-boating"
+          },
+          {
+            "label": "Adventure Sailing",
+            "href": "/program-category/adventure-sailing"
+          },
+          {
+            "label": "Opti Race Team",
+            "href": "/program/opti-race-team"
+          }
+        ]
+      },
+      {
+        "label": "Get Involved",
+        "items": [
+          {
+            "label": "Newsletter",
+            "href": "/newsletter"
+          },
+          {
+            "label": "Donate",
+            "href": "/donate"
+          },
+          {
+            "label": "Sponsorships",
+            "href": "/sponsorships"
+          }
+        ]
+      }
+    ]
+  },
+  "website_pages": [
+    {
+      "id": "00000000-0000-4000-8001-000000000001",
+      "slug": "home",
+      "title": "Sail With Us",
+      "description": "Sail With Us at the sailing center.",
+      "banner": "00000000-0000-4000-8000-000000000004",
+      "image": null,
+      "body": "",
+      "action_label": null,
+      "action_url": null
+    },
+    {
+      "id": "00000000-0000-4000-8001-000000000002",
+      "slug": "contact-us",
+      "title": "Contact Us",
+      "description": "Contact Us at the sailing center.",
+      "banner": "00000000-0000-4000-8000-000000000003",
+      "image": null,
+      "body": "Questions about a program? Write to us, or call during office hours.\n\nWe answer most messages within two days.",
+      "action_label": null,
+      "action_url": null
+    },
+    {
+      "id": "00000000-0000-4000-8001-000000000003",
+      "slug": "our-crew",
+      "title": "Our Crew",
+      "description": "Our Crew at the sailing center.",
+      "banner": "00000000-0000-4000-8000-000000000003",
+      "image": null,
+      "body": "The people who run the sailing center: staff, the board, coaches and instructors.",
+      "action_label": null,
+      "action_url": null
+    },
+    {
+      "id": "00000000-0000-4000-8001-000000000004",
+      "slug": "scholarships",
+      "title": "Scholarships",
+      "description": "Scholarships at the sailing center.",
+      "banner": "00000000-0000-4000-8000-000000000003",
+      "image": "00000000-0000-4000-8000-000000000005",
+      "body": "We want every kid who wants to sail to be able to.\n\n- Scholarships cover part or all of a program.\n- Apply before you register.",
+      "action_label": "Apply for a Scholarship",
+      "action_url": "https://forms.example.org/scholarship"
+    },
+    {
+      "id": "00000000-0000-4000-8001-000000000005",
+      "slug": "donate",
+      "title": "Donate",
+      "description": "Donate at the sailing center.",
+      "banner": "00000000-0000-4000-8000-000000000004",
+      "image": null,
+      "body": "Your gift keeps boats on the water.",
+      "action_label": null,
+      "action_url": null
+    },
+    {
+      "id": "00000000-0000-4000-8001-000000000006",
+      "slug": "sponsorships",
+      "title": "Sponsorships",
+      "description": "Sponsorships at the sailing center.",
+      "banner": "00000000-0000-4000-8000-000000000003",
+      "image": null,
+      "body": "Businesses that sponsor the sailing center help kids get on the water.",
+      "action_label": "Become a Sponsor",
+      "action_url": "/contact-us"
+    },
+    {
+      "id": "00000000-0000-4000-8001-000000000007",
+      "slug": "newsletter",
+      "title": "Newsletter",
+      "description": "Newsletter at the sailing center.",
+      "banner": "00000000-0000-4000-8000-000000000003",
+      "image": null,
+      "body": "Hear first when registration opens.",
+      "action_label": null,
+      "action_url": null
+    },
+    {
+      "id": "00000000-0000-4000-8001-000000000008",
+      "slug": "calendar",
+      "title": "Event Calendar",
+      "description": "Event Calendar at the sailing center.",
+      "banner": "00000000-0000-4000-8000-000000000003",
+      "image": null,
+      "body": "Every program we run this year, by category.",
+      "action_label": null,
+      "action_url": null
+    },
+    {
+      "id": "00000000-0000-4000-8001-000000000009",
+      "slug": "corinthian-yacht-club",
+      "title": "Corinthian Yacht Club",
+      "description": "Corinthian Yacht Club at the sailing center.",
+      "banner": "00000000-0000-4000-8000-000000000003",
+      "image": "00000000-0000-4000-8000-000000000006",
+      "body": "The sailing center grew out of the Corinthian Yacht Club (CYC), a club for adult racers and cruisers.",
+      "action_label": "Visit CYC",
+      "action_url": "https://cyc.example.org"
+    }
+  ],
+  "website_page_sections": [
+    {
+      "id": "00000000-0000-4000-8002-000000000001",
+      "page_id": "00000000-0000-4000-8001-000000000005",
+      "sort": 1,
+      "title": "Give Online",
+      "image": "00000000-0000-4000-8000-000000000005",
+      "body": "A gift of any size helps. Donations are tax deductible.",
+      "action_label": "Give Now",
+      "action_url": "https://give.example.org"
+    },
+    {
+      "id": "00000000-0000-4000-8002-000000000002",
+      "page_id": "00000000-0000-4000-8001-000000000005",
+      "sort": 2,
+      "title": "Give a Boat",
+      "image": "00000000-0000-4000-8000-000000000006",
+      "body": "We take dinghies in good shape. Write to us first.",
+      "action_label": "Contact Us",
+      "action_url": "/contact-us"
+    },
+    {
+      "id": "00000000-0000-4000-8002-000000000003",
+      "page_id": "00000000-0000-4000-8001-000000000005",
+      "sort": 3,
+      "title": "Volunteer",
+      "image": "00000000-0000-4000-8000-000000000007",
+      "body": "Help at regattas, work parties and events.",
+      "action_label": null,
+      "action_url": null
+    }
+  ],
+  "website_pages_faq_topics": [
+    {
+      "id": "00000000-0000-4000-800c-000000000001",
+      "page_id": "00000000-0000-4000-8001-000000000004",
+      "topic_id": "00000000-0000-4000-8005-000000000003",
+      "sort": 1
+    }
+  ],
+  "website_categories": [
+    {
+      "id": "00000000-0000-4000-8003-000000000001",
+      "slug": "summer-camp",
+      "title": "Summer Sailing Camps",
+      "summary": "Week-long camps for sailors ages 6 to 16.",
+      "status": "closed",
+      "sort": 1,
+      "image": "00000000-0000-4000-8000-000000000005",
+      "banner": "00000000-0000-4000-8000-000000000003",
+      "top": "Camps run Monday to Friday, all summer.\n\nEvery camper wears a life jacket on the dock and on the water.",
+      "bottom": "## Camp Schedule\n\n| Week | Camp |\n| --- | --- |\n| 1 | Learn to Sail |\n| 2 | Learn to Sail |\n| 3 | Adventure Camp |",
+      "testimonial": "Our kid came home every day talking about the boats."
+    },
+    {
+      "id": "00000000-0000-4000-8003-000000000002",
+      "slug": "junior-race-teams",
+      "title": "Junior Race Teams",
+      "summary": "Year-round racing for sailors ages 8 to 18.",
+      "status": "open",
+      "sort": 2,
+      "image": "00000000-0000-4000-8000-000000000006",
+      "banner": "00000000-0000-4000-8000-000000000004",
+      "top": "Our teams practice after school and race on weekends.",
+      "bottom": null,
+      "testimonial": null
+    },
+    {
+      "id": "00000000-0000-4000-8003-000000000003",
+      "slug": "community-boating",
+      "title": "Community Boating",
+      "summary": "Take a boat out on your own once you can sail.",
+      "status": "coming_soon",
+      "sort": 3,
+      "image": "00000000-0000-4000-8000-000000000007",
+      "banner": null,
+      "top": "Members check out a dinghy for the afternoon.",
+      "bottom": null,
+      "testimonial": null
+    },
+    {
+      "id": "00000000-0000-4000-8003-000000000004",
+      "slug": "adventure-sailing",
+      "title": "Adventure Sailing",
+      "summary": "Trips along the shore for older kids.",
+      "status": "closed",
+      "sort": 4,
+      "image": "00000000-0000-4000-8000-000000000003",
+      "banner": "00000000-0000-4000-8000-000000000003",
+      "top": "Dates for next year aren't set yet.",
+      "bottom": null,
+      "testimonial": null
+    }
+  ],
+  "website_categories_programs": [
+    {
+      "id": "00000000-0000-4000-800c-000000000002",
+      "category_id": "00000000-0000-4000-8003-000000000001",
+      "program_id": "00000000-0000-4000-8004-000000000001",
+      "sort": 1
+    },
+    {
+      "id": "00000000-0000-4000-800c-000000000003",
+      "category_id": "00000000-0000-4000-8003-000000000001",
+      "program_id": "00000000-0000-4000-8004-000000000002",
+      "sort": 2
+    },
+    {
+      "id": "00000000-0000-4000-800c-000000000004",
+      "category_id": "00000000-0000-4000-8003-000000000001",
+      "program_id": "00000000-0000-4000-8004-000000000006",
+      "sort": 3
+    },
+    {
+      "id": "00000000-0000-4000-800c-000000000005",
+      "category_id": "00000000-0000-4000-8003-000000000002",
+      "program_id": "00000000-0000-4000-8004-000000000003",
+      "sort": 1
+    },
+    {
+      "id": "00000000-0000-4000-800c-000000000006",
+      "category_id": "00000000-0000-4000-8003-000000000002",
+      "program_id": "00000000-0000-4000-8004-000000000004",
+      "sort": 2
+    },
+    {
+      "id": "00000000-0000-4000-800c-000000000007",
+      "category_id": "00000000-0000-4000-8003-000000000003",
+      "program_id": "00000000-0000-4000-8004-000000000005",
+      "sort": 1
+    }
+  ],
+  "website_categories_faq_topics": [
+    {
+      "id": "00000000-0000-4000-800c-000000000008",
+      "category_id": "00000000-0000-4000-8003-000000000001",
+      "topic_id": "00000000-0000-4000-8005-000000000001",
+      "sort": 1
+    },
+    {
+      "id": "00000000-0000-4000-800c-000000000009",
+      "category_id": "00000000-0000-4000-8003-000000000001",
+      "topic_id": "00000000-0000-4000-8005-000000000002",
+      "sort": 2
+    },
+    {
+      "id": "00000000-0000-4000-800c-000000000010",
+      "category_id": "00000000-0000-4000-8003-000000000001",
+      "topic_id": "00000000-0000-4000-8005-000000000004",
+      "sort": 3
+    }
+  ],
+  "website_categories_profiles": [
+    {
+      "id": "00000000-0000-4000-800c-000000000011",
+      "category_id": "00000000-0000-4000-8003-000000000001",
+      "profile_id": "00000000-0000-4000-8007-000000000001",
+      "sort": 1
+    },
+    {
+      "id": "00000000-0000-4000-800c-000000000012",
+      "category_id": "00000000-0000-4000-8003-000000000001",
+      "profile_id": "00000000-0000-4000-8007-000000000004",
+      "sort": 2
+    },
+    {
+      "id": "00000000-0000-4000-800c-000000000013",
+      "category_id": "00000000-0000-4000-8003-000000000002",
+      "profile_id": "00000000-0000-4000-8007-000000000003",
+      "sort": 1
+    }
+  ],
+  "website_categories_files": [
+    {
+      "id": "00000000-0000-4000-800c-000000000014",
+      "category_id": "00000000-0000-4000-8003-000000000001",
+      "file_id": "00000000-0000-4000-8000-000000000003",
+      "sort": 1
+    },
+    {
+      "id": "00000000-0000-4000-800c-000000000015",
+      "category_id": "00000000-0000-4000-8003-000000000001",
+      "file_id": "00000000-0000-4000-8000-000000000004",
+      "sort": 2
+    },
+    {
+      "id": "00000000-0000-4000-800c-000000000016",
+      "category_id": "00000000-0000-4000-8003-000000000001",
+      "file_id": "00000000-0000-4000-8000-000000000005",
+      "sort": 3
+    },
+    {
+      "id": "00000000-0000-4000-800c-000000000017",
+      "category_id": "00000000-0000-4000-8003-000000000001",
+      "file_id": "00000000-0000-4000-8000-000000000006",
+      "sort": 4
+    },
+    {
+      "id": "00000000-0000-4000-800c-000000000018",
+      "category_id": "00000000-0000-4000-8003-000000000001",
+      "file_id": "00000000-0000-4000-8000-000000000007",
+      "sort": 5
+    }
+  ],
+  "website_programs": [
+    {
+      "id": "00000000-0000-4000-8004-000000000001",
+      "slug": "learn-to-sail",
+      "title": "Learn to Sail",
+      "status": "published",
+      "sort": 1,
+      "subtitle": "Ages 6 to 9",
+      "summary": "First time on the water? Start here.",
+      "card_image": "00000000-0000-4000-8000-000000000005",
+      "card_button_label": null,
+      "card_link": null,
+      "banner": null,
+      "body": "## What to Bring\n\n- A swimsuit and a towel\n- Sunscreen\n- A lunch and a water bottle",
+      "registration_label": null,
+      "registration_url": null
+    },
+    {
+      "id": "00000000-0000-4000-8004-000000000002",
+      "slug": "adventure-camp",
+      "title": "Adventure Camp",
+      "status": "published",
+      "sort": 2,
+      "subtitle": "Ages 10 to 16",
+      "summary": "Longer sails and new boats for campers who know the basics.",
+      "card_image": "00000000-0000-4000-8000-000000000006",
+      "card_button_label": null,
+      "card_link": null,
+      "banner": null,
+      "body": "",
+      "registration_label": null,
+      "registration_url": null
+    },
+    {
+      "id": "00000000-0000-4000-8004-000000000003",
+      "slug": "opti-race-team",
+      "title": "Opti Race Team",
+      "status": "published",
+      "sort": 3,
+      "subtitle": "Ages 8 to 14",
+      "summary": "Racing in Optimist dinghies.",
+      "card_image": "00000000-0000-4000-8000-000000000007",
+      "card_button_label": null,
+      "card_link": null,
+      "banner": null,
+      "body": "Practices are twice a week. Sailors need to swim and to have sailed a full summer.",
+      "registration_label": "Sign Up",
+      "registration_url": "https://register.example.org/opti"
+    },
+    {
+      "id": "00000000-0000-4000-8004-000000000004",
+      "slug": "laser-race-team",
+      "title": "Laser Race Team",
+      "status": "published",
+      "sort": 4,
+      "subtitle": "Ages 13 to 18",
+      "summary": "Singlehanded racing for strong sailors.",
+      "card_image": "00000000-0000-4000-8000-000000000005",
+      "card_button_label": null,
+      "card_link": null,
+      "banner": null,
+      "body": "",
+      "registration_label": null,
+      "registration_url": null
+    },
+    {
+      "id": "00000000-0000-4000-8004-000000000005",
+      "slug": "community-boating-membership",
+      "title": "Community Boating Membership",
+      "status": "published",
+      "sort": 5,
+      "subtitle": "Adults",
+      "summary": "A season of afternoons on the water.",
+      "card_image": "00000000-0000-4000-8000-000000000007",
+      "card_button_label": null,
+      "card_link": null,
+      "banner": null,
+      "body": "",
+      "registration_label": null,
+      "registration_url": null
+    },
+    {
+      "id": "00000000-0000-4000-8004-000000000006",
+      "slug": "retired-program",
+      "title": "A Hidden Program",
+      "status": "hidden",
+      "sort": 6,
+      "subtitle": "Not shown",
+      "summary": "Hidden programs have no page.",
+      "card_image": "00000000-0000-4000-8000-000000000005",
+      "card_button_label": null,
+      "card_link": null,
+      "banner": null,
+      "body": "",
+      "registration_label": null,
+      "registration_url": null
+    }
+  ],
+  "website_programs_files": [
+    {
+      "id": "00000000-0000-4000-800c-000000000019",
+      "program_id": "00000000-0000-4000-8004-000000000001",
+      "file_id": "00000000-0000-4000-8000-000000000005",
+      "sort": 1
+    },
+    {
+      "id": "00000000-0000-4000-800c-000000000020",
+      "program_id": "00000000-0000-4000-8004-000000000001",
+      "file_id": "00000000-0000-4000-8000-000000000006",
+      "sort": 2
+    }
+  ],
+  "website_faq_topics": [
+    {
+      "id": "00000000-0000-4000-8005-000000000001",
+      "title": "Summer Camp Registration Questions",
+      "heading": "Registration Questions"
+    },
+    {
+      "id": "00000000-0000-4000-8005-000000000002",
+      "title": "Summer Camp Other Questions",
+      "heading": null
+    },
+    {
+      "id": "00000000-0000-4000-8005-000000000003",
+      "title": "Scholarship Questions",
+      "heading": "Scholarship Questions"
+    },
+    {
+      "id": "00000000-0000-4000-8005-000000000004",
+      "title": "Empty Topic",
+      "heading": null
+    }
+  ],
+  "website_faqs": [
+    {
+      "id": "00000000-0000-4000-8006-000000000001",
+      "topic_id": "00000000-0000-4000-8005-000000000001",
+      "sort": 2,
+      "question": "Can I get a refund?",
+      "answer": "Yes, up to two weeks before camp starts. See the [cancellation policy](/policy/cancellation-policy)."
+    },
+    {
+      "id": "00000000-0000-4000-8006-000000000002",
+      "topic_id": "00000000-0000-4000-8005-000000000001",
+      "sort": 1,
+      "question": "When does registration open?",
+      "answer": "In the spring. Sign up for the newsletter to hear first."
+    },
+    {
+      "id": "00000000-0000-4000-8006-000000000003",
+      "topic_id": "00000000-0000-4000-8005-000000000002",
+      "sort": 1,
+      "question": "What if it rains?",
+      "answer": "We sail in the rain. We stay ashore in lightning or high wind."
+    },
+    {
+      "id": "00000000-0000-4000-8006-000000000004",
+      "topic_id": "00000000-0000-4000-8005-000000000003",
+      "sort": 1,
+      "question": "Who can apply?",
+      "answer": "Any household that needs help paying for a program."
+    },
+    {
+      "id": "00000000-0000-4000-8006-000000000005",
+      "topic_id": "00000000-0000-4000-8005-000000000003",
+      "sort": 2,
+      "question": "How do I apply?",
+      "answer": "Fill in the form before you register."
+    }
+  ],
+  "website_profiles": [
+    {
+      "id": "00000000-0000-4000-8007-000000000001",
+      "name": "Casey Example",
+      "title": "Program Director",
+      "sort": 1,
+      "bio": "Made-up person. Has taught sailing for years.",
+      "photo": "00000000-0000-4000-8000-000000000008",
+      "groups": ["staff"]
+    },
+    {
+      "id": "00000000-0000-4000-8007-000000000002",
+      "name": "Jordan Sample",
+      "title": "Board Chair",
+      "sort": 2,
+      "bio": "Made-up person.",
+      "photo": "00000000-0000-4000-8000-000000000009",
+      "groups": ["officers"]
+    },
+    {
+      "id": "00000000-0000-4000-8007-000000000003",
+      "name": "Riley Placeholder",
+      "title": "Head Coach",
+      "sort": 3,
+      "bio": "Made-up person. Coaches the Opti team.",
+      "photo": "00000000-0000-4000-8000-000000000008",
+      "groups": ["coach"]
+    },
+    {
+      "id": "00000000-0000-4000-8007-000000000004",
+      "name": "Morgan Test",
+      "title": "Sailing Instructor",
+      "sort": 4,
+      "bio": "",
+      "photo": null,
+      "groups": ["instructor"]
+    }
+  ],
+  "website_policies": [
+    {
+      "id": "00000000-0000-4000-8008-000000000001",
+      "slug": "code-of-conduct",
+      "title": "Code of Conduct",
+      "sort": 1,
+      "in_footer": true
+    },
+    {
+      "id": "00000000-0000-4000-8008-000000000002",
+      "slug": "cancellation-policy",
+      "title": "Cancellation Policy",
+      "sort": 2,
+      "in_footer": true
+    },
+    {
+      "id": "00000000-0000-4000-8008-000000000003",
+      "slug": "boat-rules",
+      "title": "Boat Rules",
+      "sort": 3,
+      "in_footer": false
+    }
+  ],
+  "website_policy_versions": [
+    {
+      "id": "00000000-0000-4000-8009-000000000001",
+      "policy_id": "00000000-0000-4000-8008-000000000001",
+      "title": "Code of Conduct",
+      "effective": "2024-01-01",
+      "body": "Be kind, be safe, and listen to your instructor."
+    },
+    {
+      "id": "00000000-0000-4000-8009-000000000002",
+      "policy_id": "00000000-0000-4000-8008-000000000002",
+      "title": "Cancellation Policy",
+      "effective": "2024-01-01",
+      "body": "Older version: no refunds."
+    },
+    {
+      "id": "00000000-0000-4000-8009-000000000003",
+      "policy_id": "00000000-0000-4000-8008-000000000002",
+      "title": "Cancellation Policy",
+      "effective": "2025-03-01",
+      "body": "Cancel two weeks before a program starts for a full refund."
+    },
+    {
+      "id": "00000000-0000-4000-8009-000000000004",
+      "policy_id": "00000000-0000-4000-8008-000000000002",
+      "title": "Cancellation Policy",
+      "effective": "2099-01-01",
+      "body": "Future version, not in effect yet."
+    },
+    {
+      "id": "00000000-0000-4000-8009-000000000005",
+      "policy_id": "00000000-0000-4000-8008-000000000003",
+      "title": "Boat Rules",
+      "effective": "2024-06-01",
+      "body": "## On the Dock\n\nWalk, don't run."
+    }
+  ],
+  "website_sponsor_levels": [
+    {
+      "id": "00000000-0000-4000-800a-000000000001",
+      "name": "Test Level One",
+      "amount_cents": 10000,
+      "sort": 1,
+      "benefits": "Made-up benefits: your logo on our website."
+    },
+    {
+      "id": "00000000-0000-4000-800a-000000000002",
+      "name": "Test Level Two",
+      "amount_cents": 25050,
+      "sort": 2,
+      "benefits": "Made-up benefits: your logo on a boat."
+    }
+  ],
+  "website_sponsors": [
+    {
+      "id": "00000000-0000-4000-800b-000000000001",
+      "name": "Example Co.",
+      "url": "https://example.org",
+      "logo": "00000000-0000-4000-8000-000000000010",
+      "level_id": "00000000-0000-4000-800a-000000000002",
+      "sort": 1
+    }
+  ],
+  "files": [
+    {
+      "id": "00000000-0000-4000-8000-000000000001",
+      "filename_download": "fixture-1.png",
+      "type": "image/png",
+      "title": "Fixture 1",
+      "description": "Sailing Center"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000002",
+      "filename_download": "fixture-2.png",
+      "type": "image/png",
+      "title": "Fixture 2",
+      "description": ""
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000003",
+      "filename_download": "fixture-3.jpg",
+      "type": "image/jpeg",
+      "title": "Fixture 3",
+      "description": "A drawn sailboat on blue water"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000004",
+      "filename_download": "fixture-4.jpg",
+      "type": "image/jpeg",
+      "title": "Fixture 4",
+      "description": "A drawn sailboat at sunset"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000005",
+      "filename_download": "fixture-5.jpg",
+      "type": "image/jpeg",
+      "title": "Fixture 5",
+      "description": "A drawn dinghy"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000006",
+      "filename_download": "fixture-6.jpg",
+      "type": "image/jpeg",
+      "title": "Fixture 6",
+      "description": "A drawn dinghy on purple water"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000007",
+      "filename_download": "fixture-7.jpg",
+      "type": "image/jpeg",
+      "title": "Fixture 7",
+      "description": "A drawn dinghy on green water"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000008",
+      "filename_download": "fixture-8.jpg",
+      "type": "image/jpeg",
+      "title": "Fixture 8",
+      "description": ""
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000009",
+      "filename_download": "fixture-9.jpg",
+      "type": "image/jpeg",
+      "title": "Fixture 9",
+      "description": ""
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000010",
+      "filename_download": "fixture-10.png",
+      "type": "image/png",
+      "title": "Fixture 10",
+      "description": "Example Co."
+    }
+  ]
+}

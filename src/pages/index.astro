@@ -1,0 +1,44 @@
+---
+import Base from "../layouts/Base.astro";
+import Banner from "../components/Banner.astro";
+import Img from "../components/Img.astro";
+import { categories, page, settings } from "../lib/content.ts";
+
+const home = page("home");
+const statusLabel = { open: "Registration open", coming_soon: "Coming soon", closed: "" } as const;
+---
+
+<Base title={settings.name} description={settings.description} shareImage={home.banner}>
+  <Banner title={home.title} image={home.banner} tall />
+  <section class="mx-auto max-w-6xl px-4 py-12">
+    <p class="mx-auto max-w-3xl text-center text-lg leading-relaxed text-slate-600">{settings.description}</p>
+    <ul class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {categories.map((c) => (
+        <li>
+          <a
+            href={`/program-category/${c.slug}`}
+            class="group relative block aspect-[4/3] overflow-hidden rounded-2xl shadow-md"
+          >
+            <Img
+              id={c.image}
+              alt=""
+              widths={[480, 800]}
+              sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+              class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-navy-dark/85 via-navy-dark/20 to-transparent" />
+            {statusLabel[c.status] && (
+              <span class="absolute left-4 top-4 rounded-full bg-signal px-3 py-1 text-xs font-bold uppercase tracking-wide text-white">
+                {statusLabel[c.status]}
+              </span>
+            )}
+            <div class="absolute inset-x-0 bottom-0 p-5">
+              <h2 class="text-2xl font-black text-white">{c.title}</h2>
+              <p class="mt-1 line-clamp-2 text-sm text-slate-100">{c.summary}</p>
+            </div>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+</Base>
