@@ -1,0 +1,24 @@
+[tools]
+node = "22"
+pnpm = "10"
+lefthook = "2"
+
+[tasks.install]
+description = "Install dependencies and git hooks"
+run = ["pnpm install", "lefthook install"]
+
+[tasks.format]
+description = "Format and fix all files"
+run = ["pnpm exec prettier --write .", "pnpm exec eslint --fix ."]
+
+[tasks.check]
+description = "Typecheck, then check formatting and lint"
+run = ["pnpm exec tsc -p tsconfig.json", "pnpm exec prettier --check .", "pnpm exec eslint ."]
+
+[tasks.test]
+description = "Run unit tests"
+run = "pnpm exec vitest run --passWithNoTests"
+
+[tasks.ci]
+description = "Run all checks and tests"
+depends = ["check", "test"]

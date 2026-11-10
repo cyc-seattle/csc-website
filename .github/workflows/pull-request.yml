@@ -1,0 +1,13 @@
+name: pull-request
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  merge_group:
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    uses: cyc-seattle/.github/.github/workflows/ci.yml@v3.2.0

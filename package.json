@@ -1,13 +1,26 @@
 {
-  "devDependencies": {
-    "@wix/cli": "^1.0.0",
-    "@wix/eslint-plugin-cli": "^1.0.0",
-    "eslint": "^8.25.0",
-    "react": "16.14.0"
+  "name": "@cyc-seattle/csc-website",
+  "description": "CYC Community Sailing Center's public website, cyccommunitysailing.org",
+  "version": "0.0.0",
+  "author": "CYC Community Sailing Center",
+  "license": "Apache-2.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
   },
-  "scripts": {
-    "postinstall": "wix sync-types",
-    "dev": "wix dev",
-    "lint": "eslint ."
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cyc-seattle/csc-website.git"
+  },
+  "packageManager": "pnpm@10.34.9",
+  "prettier": "@cyc-seattle/ts-config/prettier",
+  "devDependencies": {
+    "@cyc-seattle/ts-config": "^0.1.2",
+    "@types/node": "^22.20.5",
+    "eslint": "^9.39.5",
+    "prettier": "^3.9.10",
+    "typescript": "~5.9.3",
+    "vitest": "^5.1.0"
   }
 }
