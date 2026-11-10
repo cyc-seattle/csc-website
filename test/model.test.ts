@@ -10,7 +10,7 @@ import {
   type Policy,
   type Program,
 } from "../src/lib/model.ts";
-import type { Snapshot } from "../src/lib/snapshot.ts";
+import { fileKind, referencedFiles, type Snapshot } from "../src/lib/snapshot.ts";
 
 const fixtures = JSON.parse(readFileSync("test/fixtures/content.json", "utf8")) as Snapshot;
 const content = buildContent(fixtures);
@@ -188,5 +188,28 @@ describe("resolveFileReferences", () => {
   it("leaves other addresses alone", async () => {
     const html = `<img src="https://example.org/a.jpg"><a href="${poster}">link</a>`;
     expect(await resolveFileReferences(html, url)).toBe(html);
+  });
+});
+
+describe("referencedFiles", () => {
+  it("finds every picture the fixtures name, and the fixtures have each one", () => {
+    const ids = referencedFiles(fixtures);
+    expect(ids.size).toBeGreaterThan(5);
+    const files = new Set(fixtures.files.map((f) => f.id));
+    expect([...ids].filter((id) => !files.has(id))).toEqual([]);
+  });
+});
+
+describe("fileKind", () => {
+  it("goes by the file's type", () => {
+    expect(fileKind({ type: "image/jpeg", filename_download: "a.bin" })).toBe("picture");
+    expect(fileKind({ type: "video/mp4", filename_download: "a.bin" })).toBe("video");
+    expect(fileKind({ type: "application/pdf", filename_download: "a.jpg" })).toBeUndefined();
+  });
+
+  it("goes by the extension when Directus has no real type", () => {
+    expect(fileKind({ type: "application/octet-stream", filename_download: "Boat.JPEG" })).toBe("picture");
+    expect(fileKind({ type: null, filename_download: "practice.mp4" })).toBe("video");
+    expect(fileKind({ type: "application/octet-stream", filename_download: "notes.txt" })).toBeUndefined();
   });
 });

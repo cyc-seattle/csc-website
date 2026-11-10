@@ -11,8 +11,15 @@ import { join } from "node:path";
 import { Readable } from "node:stream";
 import { pipeline } from "node:stream/promises";
 import type { ReadableStream } from "node:stream/web";
-import { createDirectus, readFiles, readItems, readSingleton, rest, staticToken } from "@directus/sdk";
-import { collections, snapshotFilename, type FileRow } from "../src/lib/snapshot.ts";
+import { createDirectus, readItems, readSingleton, rest, staticToken } from "@directus/sdk";
+import {
+  collections,
+  fileKind,
+  referencedFiles,
+  snapshotFilename,
+  type FileRow,
+  type Snapshot,
+} from "../src/lib/snapshot.ts";
 
 const out = ".content";
 const source = process.env["CONTENT_SOURCE"] ?? "fixtures";
@@ -40,11 +47,25 @@ async function pullDirectus() {
         ? await client.request(readSingleton(name))
         : await client.request(readItems(name, { limit: -1 }));
   }
-  const files = (await client.request(
-    readFiles({ limit: -1, fields: ["id", "filename_download", "type", "title", "description", "filesize"] }),
-  )) as (FileRow & { filesize: number | string | null })[];
-  const pictures = files.filter((f) => f.type?.startsWith("image/"));
-  const videos = files.filter((f) => f.type?.startsWith("video/"));
+  // Only the fields the Website Build user may read, and no filter: its policy already limits it to the Website
+  // folder, and filtering on a field it can't read is refused.
+  const files = await getData<(FileRow & { filesize: number | string | null })[]>(
+    url,
+    token,
+    "files?limit=-1&fields=id,filename_download,type,title,description,filesize",
+  );
+  const types = Object.entries(Object.groupBy(files, (f) => f.type ?? "unknown")).map(
+    ([t, fs]) => `${fs?.length} ${t}`,
+  );
+  console.log(`Directus returned ${files.length} files: ${types.join(", ") || "none"}.`);
+  const missing = [...referencedFiles(snapshot as unknown as Snapshot)].filter((id) => !files.some((f) => f.id === id));
+  if (missing.length > 0) {
+    throw new Error(
+      `The content names ${missing.length} files the build can't read, such as ${missing.slice(0, 3).join(", ")}.`,
+    );
+  }
+  const pictures = files.filter((f) => fileKind(f) === "picture");
+  const videos = files.filter((f) => fileKind(f) === "video");
   snapshot["files"] = [...pictures, ...videos].map(({ id, filename_download, type, title, description }) => ({
     id,
     filename_download,
@@ -94,4 +115,16 @@ async function download(
     if (!keep.has(name)) await rm(join(out, dir, name));
   }
   return fetched;
+}
+
+/** GETs a Directus path and returns its data, or throws with Directus's own error messages. */
+async function getData<T>(url: string, token: string, path: string): Promise<T> {
+  const response = await fetch(new URL(path, url.endsWith("/") ? url : `${url}/`), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const body = (await response.json()) as { data?: T; errors?: { message: string }[] };
+  if (!response.ok || body.errors || body.data === undefined) {
+    throw new Error(`Directus refused ${path}: ${response.status} ${body.errors?.map((e) => e.message).join("; ")}`);
+  }
+  return body.data;
 }
