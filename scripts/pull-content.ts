@@ -7,7 +7,14 @@
 import { cp, mkdir, readdir, rm, stat, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { createDirectus, readItems, readSingleton, rest, staticToken } from "@directus/sdk";
-import { collections, referencedFiles, snapshotFilename, type FileRow, type Snapshot } from "../src/lib/snapshot.ts";
+import {
+  collections,
+  fileKind,
+  referencedFiles,
+  snapshotFilename,
+  type FileRow,
+  type Snapshot,
+} from "../src/lib/snapshot.ts";
 
 const out = ".content";
 const source = process.env["CONTENT_SOURCE"] ?? "fixtures";
@@ -52,7 +59,7 @@ async function pullDirectus() {
       `The content names ${missing.length} files the build can't read, such as ${missing.slice(0, 3).join(", ")}.`,
     );
   }
-  const pictures = files.filter((f) => f.type?.startsWith("image/"));
+  const pictures = files.filter((f) => fileKind(f) === "picture");
   snapshot["files"] = pictures.map(({ id, filename_download, type, title, description }) => ({
     id,
     filename_download,

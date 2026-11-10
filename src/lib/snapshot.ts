@@ -203,3 +203,27 @@ export function referencedFiles(snapshot: Omit<Snapshot, "files">): Set<Id> {
   }
   return ids;
 }
+
+const extensions: Record<string, "picture" | "video"> = {
+  jpg: "picture",
+  jpeg: "picture",
+  png: "picture",
+  webp: "picture",
+  gif: "picture",
+  avif: "picture",
+  svg: "picture",
+  mp4: "video",
+  webm: "video",
+  mov: "video",
+};
+
+/**
+ * Whether a file is a picture or a video. Directus stores application/octet-stream for a file uploaded without a
+ * type, so a generic or missing type falls back to the file's extension.
+ */
+export function fileKind(file: Pick<FileRow, "type" | "filename_download">): "picture" | "video" | undefined {
+  if (file.type?.startsWith("image/")) return "picture";
+  if (file.type?.startsWith("video/")) return "video";
+  if (file.type && file.type !== "application/octet-stream") return undefined;
+  return extensions[file.filename_download.split(".").pop()?.toLowerCase() ?? ""];
+}
