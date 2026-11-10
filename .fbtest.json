@@ -5,8 +5,18 @@
     "trailingSlash": false,
     "redirects": [
       {
+        "source": "/event-details/opti-green-team-practice-**",
+        "destination": "/program/opti-race-team",
+        "type": 301
+      },
+      {
         "source": "/event-details/summer-camp",
         "destination": "/program-category/summer-camp",
+        "type": 301
+      },
+      {
+        "source": "/event-details/summer-camp-instructor-training{,/**}",
+        "destination": "/our-crew",
         "type": 301
       },
       {
