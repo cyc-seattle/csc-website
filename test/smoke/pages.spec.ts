@@ -15,7 +15,7 @@ test("the sitemap lists every page", async ({ page }) => {
   expect(paths).not.toContain("/program/retired-program");
 });
 
-test("every page loads, with a heading, its pictures, and links that work", async ({ page }) => {
+test("every page loads, with a heading, its pictures and videos, and links that work", async ({ page }) => {
   const errors: string[] = [];
   page.on("console", (m) => {
     if (m.type() === "error") errors.push(`${page.url()}: ${m.text()}`);
@@ -37,6 +37,11 @@ test("every page loads, with a heading, its pictures, and links that work", asyn
         );
       expect(broken, path).toEqual([]);
 
+      const media = await page
+        .locator("video")
+        .evaluateAll((vs) => vs.flatMap((v) => [v.getAttribute("src"), v.getAttribute("poster")]));
+      for (const src of media) if (src) links.add(src);
+
       for (const href of await page
         .locator("a[href^='/']")
         .evaluateAll((as) => as.map((a) => a.getAttribute("href")!))) {
@@ -45,6 +50,7 @@ test("every page loads, with a heading, its pictures, and links that work", asyn
     });
   }
 
+  expect([...links]).toContain("/media/00000000-0000-4000-8000-000000000011.mp4");
   for (const href of links) {
     const response = await page.request.get(href);
     expect(response.status(), `link to ${href}`).toBe(200);

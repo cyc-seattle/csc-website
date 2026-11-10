@@ -6,6 +6,7 @@ import {
   dollars,
   faqTopics,
   programAction,
+  resolveFileReferences,
   type Policy,
   type Program,
 } from "../src/lib/model.ts";
@@ -164,6 +165,29 @@ describe("dollars", () => {
 
   it("shows cents when there are some", () => {
     expect(dollars(25050)).toBe("$250.50");
+  });
+});
+
+describe("resolveFileReferences", () => {
+  const video = "00000000-0000-4000-8000-000000000011";
+  const poster = "00000000-0000-4000-8000-000000000004";
+  const url = async (id: string) => `/url-for/${id}`;
+
+  it("swaps a video's and its poster's file IDs for their URLs", async () => {
+    expect(await resolveFileReferences(`<video controls src="${video}" poster="${poster}"></video>`, url)).toBe(
+      `<video controls src="/url-for/${video}" poster="/url-for/${poster}"></video>`,
+    );
+  });
+
+  it("swaps a Markdown picture's file ID", async () => {
+    expect(await resolveFileReferences(`<p><img src="${poster}" alt="A boat"></p>`, url)).toBe(
+      `<p><img src="/url-for/${poster}" alt="A boat"></p>`,
+    );
+  });
+
+  it("leaves other addresses alone", async () => {
+    const html = `<img src="https://example.org/a.jpg"><a href="${poster}">link</a>`;
+    expect(await resolveFileReferences(html, url)).toBe(html);
   });
 });
 

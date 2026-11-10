@@ -4,8 +4,9 @@
 
 import { readFileSync } from "node:fs";
 import type { ImageMetadata } from "astro";
+import { getImage } from "astro:assets";
 import { buildContent, currentVersion, type Page, type Policy } from "./model.ts";
-import { snapshotFilename, type Snapshot } from "./snapshot.ts";
+import { fileKind, snapshotFilename, type Snapshot } from "./snapshot.ts";
 
 export * from "./model.ts";
 
@@ -36,4 +37,17 @@ export function image(id: string | undefined): { src: ImageMetadata; alt: string
   const file = id ? files.get(id) : undefined;
   const src = file && metadata.get(snapshotFilename(file.id, file.filename));
   return file && src ? { src, alt: file.alt } : undefined;
+}
+
+/**
+ * The URL of a file that Markdown names by its ID. A picture is resized like any other. A video is copied as it is
+ * into dist/media/ (astro.config.ts).
+ */
+export async function fileUrl(id: string): Promise<string> {
+  const file = files.get(id);
+  if (file && fileKind({ type: file.type, filename_download: file.filename }) === "video")
+    return `/media/${snapshotFilename(file.id, file.filename)}`;
+  const picture = image(id);
+  if (picture) return (await getImage({ src: picture.src, width: 1280, format: "webp" })).src;
+  throw new Error(`Markdown names file ${id}, which isn't a picture or video in the Website folder.`);
 }
