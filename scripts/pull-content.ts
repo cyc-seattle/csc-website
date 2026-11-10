@@ -20,8 +20,10 @@ import {
   type FileRow,
   type Snapshot,
 } from "../src/lib/snapshot.ts";
+import { fetchWithRetry } from "./fetch-with-retry.ts";
 
 const out = ".content";
+const retrying = fetchWithRetry();
 const source = process.env["CONTENT_SOURCE"] ?? "fixtures";
 
 if (source === "fixtures") {
@@ -38,7 +40,9 @@ async function pullDirectus() {
   const url = process.env["DIRECTUS_URL"];
   const token = process.env["DIRECTUS_TOKEN"];
   if (!url || !token) throw new Error("CONTENT_SOURCE=directus needs DIRECTUS_URL and DIRECTUS_TOKEN.");
-  const client = createDirectus(url).with(staticToken(token)).with(rest());
+  const client = createDirectus(url, { globals: { fetch: retrying } })
+    .with(staticToken(token))
+    .with(rest());
 
   const snapshot: Record<string, unknown> = {};
   for (const name of collections) {
@@ -104,7 +108,7 @@ async function download(
       () => -1,
     );
     if (size === Number(f.filesize)) continue;
-    const response = await fetch(new URL(`assets/${f.id}`, url.endsWith("/") ? url : `${url}/`), {
+    const response = await retrying(new URL(`assets/${f.id}`, url.endsWith("/") ? url : `${url}/`), {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (!response.ok || !response.body) throw new Error(`Couldn't download file ${f.id}: ${response.status}`);
@@ -119,7 +123,7 @@ async function download(
 
 /** GETs a Directus path and returns its data, or throws with Directus's own error messages. */
 async function getData<T>(url: string, token: string, path: string): Promise<T> {
-  const response = await fetch(new URL(path, url.endsWith("/") ? url : `${url}/`), {
+  const response = await retrying(new URL(path, url.endsWith("/") ? url : `${url}/`), {
     headers: { Authorization: `Bearer ${token}` },
   });
   const body = (await response.json()) as { data?: T; errors?: { message: string }[] };
