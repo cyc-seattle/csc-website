@@ -1,11 +1,16 @@
-// Writes the content snapshot to .content/: content.json, and the pictures in files/, named by snapshotFilename.
+// Writes the content snapshot to .content/: content.json, the pictures in files/, and the videos in media/, each
+// named by snapshotFilename.
 //
 // CONTENT_SOURCE=fixtures (the default) copies test/fixtures/. CONTENT_SOURCE=directus reads DIRECTUS_URL as the
 // Website Build user, with DIRECTUS_TOKEN. Its policy lets it read only the website_* collections and the Website
 // folder's files (cyc-seattle/platform#150).
 
+import { createWriteStream } from "node:fs";
 import { cp, mkdir, readdir, rm, stat, writeFile } from "node:fs/promises";
 import { join } from "node:path";
+import { Readable } from "node:stream";
+import { pipeline } from "node:stream/promises";
+import type { ReadableStream } from "node:stream/web";
 import { createDirectus, readFiles, readItems, readSingleton, rest, staticToken } from "@directus/sdk";
 import { collections, snapshotFilename, type FileRow } from "../src/lib/snapshot.ts";
 
@@ -39,23 +44,39 @@ async function pullDirectus() {
     readFiles({ limit: -1, fields: ["id", "filename_download", "type", "title", "description", "filesize"] }),
   )) as (FileRow & { filesize: number | string | null })[];
   const pictures = files.filter((f) => f.type?.startsWith("image/"));
-  snapshot["files"] = pictures.map(({ id, filename_download, type, title, description }) => ({
+  const videos = files.filter((f) => f.type?.startsWith("video/"));
+  snapshot["files"] = [...pictures, ...videos].map(({ id, filename_download, type, title, description }) => ({
     id,
     filename_download,
     type,
     title,
     description,
   }));
-
-  await mkdir(join(out, "files"), { recursive: true });
+  await mkdir(out, { recursive: true });
   await writeFile(join(out, "content.json"), JSON.stringify(snapshot, null, 2));
 
-  // Keeps a file the last pull saved when its size hasn't changed, so a build fetches only new or replaced pictures.
+  // Videos go in media/, which the build copies as they are, so Astro's picture import never sees them.
+  const fetched = (await download(url, token, pictures, "files")) + (await download(url, token, videos, "media"));
+  console.log(
+    `Pulled ${collections.length} collections, ${pictures.length} pictures and ${videos.length} videos ` +
+      `(${fetched} new) to ${out}/.`,
+  );
+}
+
+/** Saves each file to .content/<dir>/, and deletes any there that Directus no longer has. Returns how many it fetched. */
+async function download(
+  url: string,
+  token: string,
+  files: (FileRow & { filesize: number | string | null })[],
+  dir: string,
+) {
+  await mkdir(join(out, dir), { recursive: true });
+  // Keeps a file the last pull saved when its size hasn't changed, so a build fetches only new or replaced files.
   const keep = new Set<string>();
   let fetched = 0;
-  for (const f of pictures) {
+  for (const f of files) {
     const name = snapshotFilename(f.id, f.filename_download);
-    const path = join(out, "files", name);
+    const path = join(out, dir, name);
     keep.add(name);
     const size = await stat(path).then(
       (s) => s.size,
@@ -65,12 +86,12 @@ async function pullDirectus() {
     const response = await fetch(new URL(`assets/${f.id}`, url.endsWith("/") ? url : `${url}/`), {
       headers: { Authorization: `Bearer ${token}` },
     });
-    if (!response.ok) throw new Error(`Couldn't download file ${f.id}: ${response.status}`);
-    await writeFile(path, Buffer.from(await response.arrayBuffer()));
+    if (!response.ok || !response.body) throw new Error(`Couldn't download file ${f.id}: ${response.status}`);
+    await pipeline(Readable.fromWeb(response.body as ReadableStream), createWriteStream(path));
     fetched++;
   }
-  for (const name of await readdir(join(out, "files"))) {
-    if (!keep.has(name)) await rm(join(out, "files", name));
+  for (const name of await readdir(join(out, dir))) {
+    if (!keep.has(name)) await rm(join(out, dir, name));
   }
-  console.log(`Pulled ${collections.length} collections and ${pictures.length} pictures (${fetched} new) to ${out}/.`);
+  return fetched;
 }

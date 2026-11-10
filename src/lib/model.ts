@@ -118,6 +118,8 @@ export interface SponsorLevel {
 export interface File {
   id: Id;
   filename: string;
+  /** Its MIME type, such as image/jpeg or video/mp4. */
+  type: string;
   alt: string;
 }
 
@@ -192,6 +194,18 @@ export function dollars(cents: number): string {
     currency: "USD",
     minimumFractionDigits: cents % 100 === 0 ? 0 : 2,
   });
+}
+
+const fileReference = /\b(src|poster)="([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})"/g;
+
+/**
+ * Markdown names a Website-folder file by its ID, as in `<video src="<id>" poster="<id>">` or `![](<id>)`. This
+ * swaps each ID in the rendered HTML for the URL `url` gives it.
+ */
+export async function resolveFileReferences(html: string, url: (id: Id) => Promise<string>): Promise<string> {
+  const ids = new Set([...html.matchAll(fileReference)].map((m) => m[2]!));
+  const urls = new Map(await Promise.all([...ids].map(async (id) => [id, await url(id)] as const)));
+  return html.replace(fileReference, (_, attribute: string, id: string) => `${attribute}="${urls.get(id)}"`);
 }
 
 export function buildContent(snapshot: Snapshot): Content {
@@ -308,6 +322,7 @@ export function buildContent(snapshot: Snapshot): Content {
   const files = snapshot.files.map((f): File => ({
     id: f.id,
     filename: f.filename_download,
+    type: f.type ?? "",
     alt: f.description ?? "",
   }));
 

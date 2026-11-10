@@ -256,7 +256,7 @@
       "image": "00000000-0000-4000-8000-000000000006",
       "banner": "00000000-0000-4000-8000-000000000004",
       "top": "Our teams practice after school and race on weekends.",
-      "bottom": null,
+      "bottom": "## Watch a Practice\n\n<video controls preload=\"none\" src=\"00000000-0000-4000-8000-000000000011\" poster=\"00000000-0000-4000-8000-000000000004\"></video>",
       "testimonial": null
     },
     {
@@ -761,6 +761,13 @@
       "type": "image/png",
       "title": "Fixture 10",
       "description": "Example Co."
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000011",
+      "filename_download": "fixture-11.mp4",
+      "type": "video/mp4",
+      "title": "Fixture 11",
+      "description": "A short drawn clip"
     }
   ]
 }

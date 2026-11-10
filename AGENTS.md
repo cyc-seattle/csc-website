@@ -53,7 +53,12 @@ Every word and picture on the site comes from Directus. Change content there, no
   crew, the policy version in effect, and where each program's button goes. `src/lib/snapshot.ts` types the rows.
 - `test/fixtures/` is made-up content in the same shape, with drawn pictures. CI, the smoke test and screenshots use
   it. Never put real content or photos there: the repo is public.
-- Text fields are Markdown, rendered as trusted HTML (`src/components/Markdown.astro`).
+- Text fields are Markdown, rendered as trusted HTML (`src/components/Markdown.astro`). Markdown names a picture or
+  video in the Website folder by its file ID: `![A boat](<id>)`, or
+  `<video controls preload="none" src="<video id>" poster="<picture id>"></video>`. The build swaps each ID for the
+  file's URL on the site, and stops if the ID isn't a picture or video it pulled. Pictures are resized like any other.
+  Videos go to `.content/media/` and are copied as they are into `dist/media/`, so keep them small. Never link to
+  files hosted elsewhere, such as Wix's: the security headers block them (`firebase.json`).
 
 ## Layout
 

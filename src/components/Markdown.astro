@@ -1,5 +1,6 @@
 ---
 import { marked } from "marked";
+import { fileUrl, resolveFileReferences } from "../lib/content.ts";
 
 interface Props {
   source: string;
@@ -7,7 +8,7 @@ interface Props {
 }
 const { source, class: className } = Astro.props;
 // The content comes from our own Directus, written by staff's coding agents, so its HTML is trusted.
-const html = source ? await marked.parse(source) : "";
+const html = source ? await resolveFileReferences(await marked.parse(source), fileUrl) : "";
 ---
 
 {html && (
