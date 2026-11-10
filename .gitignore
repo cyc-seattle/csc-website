@@ -14,3 +14,5 @@ CLAUDE.md
 test-results/
 playwright-report/
 screenshots/
+firebase.deploy.json
+.firebase/

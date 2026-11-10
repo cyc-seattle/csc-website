@@ -8,8 +8,9 @@ DIRECTUS_TOKEN="$(gcloud secrets versions access latest --secret "$DIRECTUS_TOKE
 export DIRECTUS_TOKEN
 CONTENT_SOURCE=directus mise run build
 
-# firebase.json names no site, so each deploy says which one.
-config="$(mktemp --suffix .json)"
+# firebase.json names no site, so each deploy says which one. Firebase reads `public` relative to the config file,
+# so the copy sits beside the original.
+config=firebase.deploy.json
 trap 'rm -f "$config"' EXIT
 jq --arg site "$FIREBASE_SITE" '.hosting.site = $site' firebase.json > "$config"
 firebase=(pnpm exec firebase --config "$config" --project "$FIREBASE_PROJECT" --non-interactive)
