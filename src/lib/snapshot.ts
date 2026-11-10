@@ -187,3 +187,19 @@ export function snapshotFilename(id: Id, filenameDownload: string): string {
   const dot = filenameDownload.lastIndexOf(".");
   return dot > 0 ? id + filenameDownload.slice(dot).toLowerCase() : id;
 }
+
+const fileFields = new Set(["logo", "badge", "banner", "image", "card_image", "photo", "file_id"]);
+
+/** Every file ID the content names in a picture field or a photo list. */
+export function referencedFiles(snapshot: Omit<Snapshot, "files">): Set<Id> {
+  const ids = new Set<Id>();
+  for (const name of collections) {
+    const rows: unknown = snapshot[name];
+    for (const row of Array.isArray(rows) ? rows : [rows]) {
+      for (const [field, value] of Object.entries(row as Record<string, unknown>)) {
+        if (fileFields.has(field) && typeof value === "string") ids.add(value);
+      }
+    }
+  }
+  return ids;
+}

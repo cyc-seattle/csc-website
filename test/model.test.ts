@@ -9,7 +9,7 @@ import {
   type Policy,
   type Program,
 } from "../src/lib/model.ts";
-import type { Snapshot } from "../src/lib/snapshot.ts";
+import { referencedFiles, type Snapshot } from "../src/lib/snapshot.ts";
 
 const fixtures = JSON.parse(readFileSync("test/fixtures/content.json", "utf8")) as Snapshot;
 const content = buildContent(fixtures);
@@ -164,5 +164,14 @@ describe("dollars", () => {
 
   it("shows cents when there are some", () => {
     expect(dollars(25050)).toBe("$250.50");
+  });
+});
+
+describe("referencedFiles", () => {
+  it("finds every picture the fixtures name, and the fixtures have each one", () => {
+    const ids = referencedFiles(fixtures);
+    expect(ids.size).toBeGreaterThan(5);
+    const files = new Set(fixtures.files.map((f) => f.id));
+    expect([...ids].filter((id) => !files.has(id))).toEqual([]);
   });
 });
