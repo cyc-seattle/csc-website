@@ -1,0 +1,199 @@
+---
+import "../styles/global.css";
+import { getImage } from "astro:assets";
+import { marked } from "marked";
+import Img from "../components/Img.astro";
+import { settings, policies, image } from "../lib/content.ts";
+
+interface Props {
+  title: string;
+  description?: string | undefined;
+  shareImage?: string | undefined;
+}
+const { title, description = settings.description, shareImage } = Astro.props;
+const fullTitle = title === settings.name ? settings.name : `${title} | ${settings.name}`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const share = image(shareImage);
+const og = share ? await getImage({ src: share.src, width: 1200, format: "jpg" }) : undefined;
+const footerPolicies = policies.filter((p) => p.inFooter);
+const announcement = settings.announcement ? await marked.parseInline(settings.announcement) : "";
+const path = Astro.url.pathname;
+// The address's last line, such as "Seattle, WA 98117".
+const [, locality, region, postalCode] = settings.address.at(-1)?.match(/^(.+), ([A-Z]{2}) (\d{5})/) ?? [];
+const org = {
+  "@context": "https://schema.org",
+  "@type": "NGO",
+  name: settings.name,
+  url: Astro.site?.toString(),
+  email: settings.email,
+  telephone: settings.phone,
+  taxID: settings.ein,
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: settings.address.slice(0, -1).join(", "),
+    addressLocality: locality,
+    addressRegion: region,
+    postalCode,
+  },
+  sameAs: settings.social.map((s) => s.url),
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    {og && <meta property="og:image" content={new URL(og.src, Astro.site)} />}
+    <script type="application/ld+json" set:html={JSON.stringify(org)} />
+  </head>
+  <body class="flex min-h-screen flex-col bg-white font-sans">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:rounded focus:bg-white focus:px-3 focus:py-2"
+    >
+      Skip to content
+    </a>
+    {announcement && (
+      <div class="bg-signal px-4 py-2 text-center text-sm font-bold text-white" set:html={announcement} />
+    )}
+    <header class="sticky top-0 z-40 border-b border-slate-100 bg-white/95 backdrop-blur">
+      <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
+        <a href="/" aria-label={`${settings.name} home`}>
+          <Img
+            id={settings.logo}
+            alt={settings.name}
+            widths={[260, 520]}
+            sizes="260px"
+            loading="eager"
+            class="h-14 w-auto sm:h-16"
+          />
+        </a>
+        <!-- No JavaScript: <details> opens each menu, and the phone menu, on its own. -->
+        <details class="group relative lg:hidden">
+          <summary class="flex cursor-pointer list-none items-center gap-2 rounded-full border-2 border-navy px-4 py-1.5 font-bold text-navy">
+            Menu
+          </summary>
+          <nav
+            class="absolute right-0 mt-2 w-72 rounded-xl bg-white p-4 shadow-xl ring-1 ring-slate-100"
+            aria-label="Main"
+          >
+            {settings.menu.map((group) => (
+              <div class="mb-3">
+                <p class="text-xs font-bold uppercase tracking-wider text-signal">{group.label}</p>
+                <ul>
+                  {group.items.map((item) => (
+                    <li>
+                      <a class="block py-1 text-navy hover:underline" href={item.href}>
+                        {item.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </nav>
+        </details>
+        <nav class="hidden lg:block" aria-label="Main">
+          <ul class="flex gap-1">
+            {settings.menu.map((group) => (
+              <li class="group relative">
+                <button
+                  type="button"
+                  class:list={[
+                    "rounded-full px-3 py-2 font-bold text-navy hover:bg-sea",
+                    group.items.some((i) => i.href === path) && "text-signal",
+                  ]}
+                  aria-haspopup="true"
+                >
+                  {group.label}
+                </button>
+                <ul class="invisible absolute right-0 top-full w-60 rounded-xl bg-white p-2 opacity-0 shadow-xl ring-1 ring-slate-100 transition group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
+                  {group.items.map((item) => (
+                    <li>
+                      <a
+                        class="block rounded-lg px-3 py-2 text-navy hover:bg-sea"
+                        href={item.href}
+                        aria-current={item.href === path ? "page" : undefined}
+                      >
+                        {item.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <main id="main" class="flex-1">
+      <slot />
+    </main>
+    <footer class="mt-16 bg-navy-dark text-slate-200">
+      <div class="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:grid-cols-3">
+        <div class="flex flex-col items-start gap-4">
+          <Img
+            id={settings.badge}
+            alt=""
+            widths={[120, 240]}
+            sizes="120px"
+            class="h-28 w-auto rounded-full bg-white p-2"
+          />
+          <div class="flex gap-4">
+            {settings.social.map((s) => (
+              <a class="font-bold text-white hover:underline" href={s.url}>
+                {s.label}
+              </a>
+            ))}
+          </div>
+        </div>
+        <div>
+          <h2 class="mb-3 font-black text-white">
+            <a href="/contact-us" class="hover:underline">
+              Contact Us
+            </a>
+          </h2>
+          <address class="space-y-1 text-sm not-italic">
+            <a class="block hover:underline" href={`mailto:${settings.email}`}>
+              {settings.email}
+            </a>
+            <a class="block hover:underline" href={settings.mapUrl}>
+              {settings.address.map((line) => (
+                <span class="block">{line}</span>
+              ))}
+            </a>
+            <a class="block hover:underline" href={`tel:+1-${settings.phone}`}>
+              {settings.phone}
+            </a>
+            <span class="block">EIN: {settings.ein}</span>
+          </address>
+        </div>
+        <div>
+          <h2 class="mb-3 font-black text-white">Policies</h2>
+          <ul class="space-y-1 text-sm">
+            {footerPolicies.map((p) => (
+              <li>
+                <a class="hover:underline" href={`/policy/${p.slug}`}>
+                  {p.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      <p class="pb-6 text-center text-xs text-slate-400">
+        © {new Date().getFullYear()} {settings.name}, a 501(c)(3) nonprofit.
+      </p>
+    </footer>
+  </body>
+</html>

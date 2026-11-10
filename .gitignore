@@ -9,3 +9,8 @@ CLAUDE.md
 .cursor/
 .vscode/
 .idea/
+.astro/
+.content/
+test-results/
+playwright-report/
+screenshots/

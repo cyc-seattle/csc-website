@@ -1,0 +1,25 @@
+---
+import Img from "./Img.astro";
+
+interface Props {
+  ids: string[];
+  title?: string;
+}
+const { ids, title = "Gallery" } = Astro.props;
+---
+
+{ids.length > 0 && (
+  <section class="mx-auto max-w-6xl px-4 py-12">
+    <h2 class="mb-6 text-center text-3xl font-black text-navy">{title}</h2>
+    <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+      {ids.map((id) => (
+        <Img
+          id={id}
+          widths={[300, 600]}
+          sizes="(min-width: 1024px) 25vw, 50vw"
+          class="aspect-[4/3] w-full rounded-lg object-cover"
+        />
+      ))}
+    </div>
+  </section>
+)}

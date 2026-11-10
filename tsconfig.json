@@ -1,8 +1,11 @@
 {
-  "extends": "@cyc-seattle/ts-config/tsconfig",
+  "extends": ["@cyc-seattle/ts-config/tsconfig", "astro/tsconfigs/strictest"],
   "compilerOptions": {
     "noEmit": true,
-    "declaration": false
+    "declaration": false,
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true
   },
-  "include": ["vitest.config.ts"]
+  "include": [".astro/types.d.ts", "src", "scripts", "test", "*.ts"],
+  "exclude": ["dist", ".content"]
 }

@@ -3,22 +3,57 @@ node = "22"
 pnpm = "10"
 lefthook = "2"
 
+[env]
+# fixtures copies test/fixtures/. directus reads DIRECTUS_URL with DIRECTUS_TOKEN (AGENTS.md).
+CONTENT_SOURCE = "{{ get_env(name='CONTENT_SOURCE', default='fixtures') }}"
+
 [tasks.install]
-description = "Install dependencies and git hooks"
-run = ["pnpm install", "lefthook install"]
+description = "Install dependencies, git hooks, and the Chromium the smoke test runs in"
+run = ["pnpm install", "lefthook install", "pnpm exec playwright install ${CI:+--with-deps} chromium"]
+
+[tasks.pull]
+description = "Write the content snapshot to .content/, from $CONTENT_SOURCE"
+run = "node scripts/pull-content.ts"
+
+[tasks.dev]
+description = "Serve the site locally, reloading on change"
+depends = ["pull"]
+run = "pnpm exec astro dev"
+
+[tasks.build]
+description = "Build the site into dist/"
+depends = ["pull"]
+run = "pnpm exec astro build"
+
+[tasks.preview]
+description = "Serve the built site from dist/"
+run = "pnpm exec astro preview"
 
 [tasks.format]
 description = "Format and fix all files"
 run = ["pnpm exec prettier --write .", "pnpm exec eslint --fix ."]
 
+# astro check typechecks the .astro files too. It reads the snapshot, so it pulls first.
 [tasks.check]
 description = "Typecheck, then check formatting and lint"
-run = ["pnpm exec tsc -p tsconfig.json", "pnpm exec prettier --check .", "pnpm exec eslint ."]
+depends = ["pull"]
+run = ["pnpm exec astro check", "pnpm exec prettier --check .", "pnpm exec eslint ."]
 
 [tasks.test]
 description = "Run unit tests"
-run = "pnpm exec vitest run --passWithNoTests"
+run = "pnpm exec vitest run"
 
+[tasks.smoke]
+description = "Build, then visit every page in Chromium"
+depends = ["build"]
+run = "pnpm exec playwright test"
+
+[tasks.screenshots]
+description = "Save each page at laptop and phone sizes to screenshots/, from the built site"
+run = "pnpm exec playwright test screenshots.spec.ts"
+env = { SCREENSHOTS = "1" }
+
+# One after another: check and build both write .astro/ and pull rewrites .content/.
 [tasks.ci]
 description = "Run all checks and tests"
-depends = ["check", "test"]
+run = ["mise run check", "mise run test", "mise run smoke"]
