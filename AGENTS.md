@@ -83,9 +83,11 @@ reads the Directus token from Secret Manager, builds with `CONTENT_SOURCE=direct
   change from its PR's screenshots, and see it live after the prod deploy.
 - **A push to `main`** (`pull-request.yml`, environment `prod`): deploys the live site from prod's Directus, once a
   maintainer approves.
-- **A content change** (`publish.yml`, environment `publish`): a Directus Flow sends the `publish` repository
-  dispatch when website content changes, and a nightly run catches anything it missed. Both build `main` from prod's
-  Directus and deploy live with no reviewer. `gh workflow run publish.yml` publishes by hand.
+- **A content change** (`publish.yml`, environment `publish`): prod's Directus starts the workflow when website
+  content changes, about 30 seconds after the last edit
+  ([platform's docs](https://cyc-seattle.github.io/platform/website/#publishing)), and a nightly run catches anything
+  it missed. Both build `main` from prod's Directus and deploy live with no reviewer. `gh workflow run publish.yml`
+  publishes by hand.
 
 `PULUMI_STACK` picks the Directus (`mise.toml`). `deploy.yml` sets `prod`. Locally it defaults to `dev`, and
 `mise run deploy` refuses to run unless it's `prod`.
