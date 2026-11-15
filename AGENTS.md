@@ -31,7 +31,7 @@ mise provides the tools. Run `mise trust`, then `mise run install`.
 - `mise run test`: run the unit tests with Vitest
 - `mise run smoke`: `build`, then visit every page in the sitemap in Chromium: each loads with a heading and its
   pictures, and every link on the site works
-- `mise run deploy`: build from `$PULUMI_STACK`'s Directus and deploy it (below)
+- `mise run deploy`: build from prod's Directus and deploy the live site (below)
 - `mise run screenshots`: save the main pages at laptop and phone sizes to `screenshots/`, from `dist/`
 
 Playwright downloads a Chromium that runs on most Linux, macOS, and Windows machines. Where it can't, such as on NixOS,
@@ -78,17 +78,17 @@ such as Wix's `/event-details/*` pages, its security headers, and its clean URLs
 `deploy.yml`, which signs in as `deploy-website` without a key and runs `mise run deploy` (`scripts/deploy.sh`). It
 reads the Directus token from Secret Manager, builds with `CONTENT_SOURCE=directus`, and deploys.
 
-- **A PR** (`pull-request.yml`, environment `dev`): after CI, the PR deploys to its own preview channel, `pr-<number>`,
-  built from dev's Directus. The URL is in the run's summary. A channel expires 7 days after its last deploy. A fork's
-  PR doesn't deploy.
+- **A PR** (`pull-request.yml`): runs CI and doesn't deploy. `deploy-website` can deploy the live site, so only `main`
+  gets its credentials ([cyc-seattle/platform#280](https://github.com/cyc-seattle/platform/issues/280)). Review a
+  change from its PR's screenshots, and see it live after the prod deploy.
 - **A push to `main`** (`pull-request.yml`, environment `prod`): deploys the live site from prod's Directus, once a
   maintainer approves.
 - **A content change** (`publish.yml`, environment `publish`): a Directus Flow sends the `publish` repository
   dispatch when website content changes, and a nightly run catches anything it missed. Both build `main` from prod's
   Directus and deploy live with no reviewer. `gh workflow run publish.yml` publishes by hand.
 
-`PULUMI_STACK`, which `deploy.yml` sets, picks the Directus, the token's secret, and preview or live
-(`mise.toml`). Locally it defaults to `dev`, so a local `mise run deploy` makes a preview channel named for the branch.
+`PULUMI_STACK` picks the Directus (`mise.toml`). `deploy.yml` sets `prod`. Locally it defaults to `dev`, and
+`mise run deploy` refuses to run unless it's `prod`.
 
 ## Pull requests
 

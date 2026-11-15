@@ -7,12 +7,13 @@ gcloud = "latest"
 jq = "1"
 
 [env]
-# The org's deploy.yml sets PULUMI_STACK: dev for PR previews, prod for the live site. Locally it defaults to dev.
+# PULUMI_STACK picks the Directus. The org's deploy.yml sets prod. Locally it defaults to dev.
 PULUMI_STACK = "{{ get_env(name='PULUMI_STACK', default='dev') }}"
 FIREBASE_PROJECT = "cyc-admin-scripts"
 FIREBASE_SITE = "csc-website"
 DIRECTUS_URL = "{% if env.PULUMI_STACK == 'dev' %}https://directus.dev.cycsail.team{% else %}https://directus.cycsail.team{% endif %}"
-DIRECTUS_TOKEN_SECRET = "{% if env.PULUMI_STACK == 'dev' %}dev-{% endif %}csc-website-directus-token"
+# Only deploy reads it, and deploy runs only on prod.
+DIRECTUS_TOKEN_SECRET = "csc-website-directus-token"
 # fixtures copies test/fixtures/. directus reads DIRECTUS_URL with DIRECTUS_TOKEN (AGENTS.md).
 CONTENT_SOURCE = "{{ get_env(name='CONTENT_SOURCE', default='fixtures') }}"
 
@@ -41,7 +42,7 @@ run = "pnpm exec astro preview"
 # Needs gcloud credentials that can read the token and deploy to Firebase Hosting. Actions runs it; locally it's only
 # for breaking glass.
 [tasks.deploy]
-description = "Build from $PULUMI_STACK's Directus and deploy: a PR's preview channel on dev, the live site on prod"
+description = "Build from prod's Directus and deploy the live site"
 run = "./scripts/deploy.sh"
 
 [tasks.format]

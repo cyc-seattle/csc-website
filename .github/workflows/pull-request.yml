@@ -1,7 +1,7 @@
 name: pull-request
 
-# A PR's push runs CI, then deploys the PR to its own Firebase preview channel, built from dev's Directus. A push to
-# main deploys the live site from prod's Directus, once a maintainer approves.
+# A PR's push runs CI. A push to main deploys the live site from prod's Directus, once a maintainer approves. PRs
+# don't deploy: deploy-website can deploy the live site, so only main gets its credentials (cyc-seattle/platform#280).
 on:
   pull_request:
     types: [opened, synchronize, reopened]
@@ -15,23 +15,10 @@ permissions:
 jobs:
   ci:
     if: github.event_name != 'push'
-    uses: cyc-seattle/.github/.github/workflows/ci.yml@v3.2.0
-  # A fork's PR gets no OIDC token, so it can't deploy.
-  preview:
-    needs: ci
-    if: >-
-      github.event_name == 'pull_request' &&
-      github.event.pull_request.head.repo.full_name == github.repository
-    uses: cyc-seattle/.github/.github/workflows/deploy.yml@v3.2.0
-    permissions:
-      id-token: write
-      contents: read
-    with:
-      environment: dev
-      task: deploy
+    uses: cyc-seattle/.github/.github/workflows/ci.yml@v3.4.0
   prod:
     if: github.event_name == 'push'
-    uses: cyc-seattle/.github/.github/workflows/deploy.yml@v3.2.0
+    uses: cyc-seattle/.github/.github/workflows/deploy.yml@v3.4.0
     permissions:
       id-token: write
       contents: read
