@@ -5,7 +5,6 @@ name: pull-request
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-  merge_group:
   push:
     branches: [main]
 
@@ -15,10 +14,10 @@ permissions:
 jobs:
   ci:
     if: github.event_name != 'push'
-    uses: cyc-seattle/.github/.github/workflows/ci.yml@v3.4.0
+    uses: cyc-seattle/.github/.github/workflows/ci.yml@v4.0.0
   prod:
     if: github.event_name == 'push'
-    uses: cyc-seattle/.github/.github/workflows/deploy.yml@v3.4.0
+    uses: cyc-seattle/.github/.github/workflows/deploy.yml@v4.0.0
     permissions:
       id-token: write
       contents: read

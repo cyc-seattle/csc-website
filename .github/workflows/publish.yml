@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   publish:
-    uses: cyc-seattle/.github/.github/workflows/deploy.yml@v3.4.0
+    uses: cyc-seattle/.github/.github/workflows/deploy.yml@v4.0.0
     permissions:
       id-token: write
       contents: read
