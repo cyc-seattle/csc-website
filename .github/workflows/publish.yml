@@ -1,10 +1,8 @@
 name: publish
 
-# Content builds: main's code with prod's Directus content, deployed live with no reviewer. A Directus Flow sends the
-# `publish` dispatch when website content changes. The nightly run catches any change a Flow missed.
+# Content builds: main's code with prod's Directus content, deployed live with no reviewer. Prod's Directus starts
+# one when website content changes (cyc-seattle/csc-website#8). The nightly run catches any change it missed.
 on:
-  repository_dispatch:
-    types: [publish]
   schedule:
     - cron: "0 10 * * *"
   workflow_dispatch:
