@@ -11,7 +11,8 @@ Follow `cyc:conventions` (the rules shared by every cyc-seattle repo).
 Tailwind: the build reads the `website_*` collections from the platform's Directus
 ([cyc-seattle/platform](https://github.com/cyc-seattle/platform)), resizes the pictures, and writes plain HTML that
 Firebase Hosting serves. Visitors never call Directus, and the pages run no JavaScript: the menus open with
-`<details>` and CSS.
+`<details>` and CSS. The one exception is the newsletter form's few lines, `src/scripts/join-name.js`, which the
+security header allows by its hash, and the form still works without them.
 
 Staff don't edit the site. Coding agents change its content in Directus and its code here.
 
@@ -66,6 +67,12 @@ Every word and picture on the site comes from Directus. Change content there, no
 - `src/pages/` holds the pages. A file's path is its URL, and Astro writes each as a file (`/donate.html`), which
   Firebase Hosting serves as `/donate`, the path Wix used. `[page].astro` is the fixed pages from `website_pages`,
   such as Contact Us and Donate, each with any list it adds from another collection.
+- `src/lib/forms.ts` says where the two forms post, both under `mail.cyccommunitysailing.org`
+  ([cyc-seattle/csc-website#9](https://github.com/cyc-seattle/csc-website/issues/9)). Contact Us posts to the
+  platform's Directus at `/forms/contact`, which emails info@ and keeps nothing. The newsletter form posts to
+  Listmonk's signup form, which sends a confirmation email. Each sends the visitor back to a page here, such as
+  `/contact-us/sent`, which search engines and the sitemap leave out. A change to `src/scripts/join-name.js` changes
+  its hash in `firebase.json` too; `test/forms.test.ts` checks the two match.
 - `src/components/` holds the parts pages share, `src/layouts/Base.astro` the header, menu, footer, and each page's
   search and link-preview tags. `src/styles/global.css` holds the colors and the button styles.
 - `test/` holds the unit tests, `*.test.ts`, and `test/smoke/` the Playwright tests, run against `dist/`.

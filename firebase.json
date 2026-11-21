@@ -31,7 +31,7 @@
         "headers": [
           {
             "key": "Content-Security-Policy",
-            "value": "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; script-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+            "value": "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; script-src 'self' 'sha256-lfhyCRpPsOcnfMdSWURIxfMOUHiRtt4+w3S3mZXR3qw='; frame-ancestors 'none'; base-uri 'self'; form-action 'self' https://mail.cyccommunitysailing.org https://cyccommunitysailing.org"
           },
           {
             "key": "Strict-Transport-Security",

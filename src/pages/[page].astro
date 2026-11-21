@@ -7,7 +7,10 @@ import Markdown from "../components/Markdown.astro";
 import Img from "../components/Img.astro";
 import Faqs from "../components/Faqs.astro";
 import Profiles from "../components/Profiles.astro";
-import { pages, profiles, sponsorLevels, sponsors, categories, settings, dollars, type Page } from "../lib/content.ts";
+import Honeypot from "../components/Honeypot.astro";
+import { pages, profiles, sponsorLevels, sponsors, categories, dollars, type Page } from "../lib/content.ts";
+import { checkYourEmail, contactAction, newsletterListId, subscribeAction } from "../lib/forms.ts";
+import joinName from "../scripts/join-name.js?raw";
 
 export function getStaticPaths() {
   return pages.filter((p) => p.slug !== "home").map((page) => ({ params: { page: page.slug }, props: { page } }));
@@ -33,14 +36,12 @@ const group = (name: string) => profiles.filter((x) => x.groups.includes(name));
     </div>
 
     {p.slug === "contact-us" && (
-      <form class="mt-10 grid max-w-2xl gap-4 rounded-2xl bg-sand p-6 sm:grid-cols-2" onsubmit="return false">
-        <p class="rounded-lg bg-white px-4 py-3 text-sm sm:col-span-2">
-          This form isn't connected yet. Email us at{" "}
-          <a class="font-bold text-navy underline" href={`mailto:${settings.email}`}>
-            {settings.email}
-          </a>{" "}
-          instead.
-        </p>
+      <form
+        class="mt-10 grid max-w-2xl gap-4 rounded-2xl bg-sand p-6 sm:grid-cols-2"
+        method="post"
+        action={contactAction}
+      >
+        <Honeypot name="website" />
         <label class="grid gap-1 text-sm font-bold text-navy">
           First name
           <input
@@ -84,50 +85,60 @@ const group = (name: string) => profiles.filter((x) => x.groups.includes(name));
             required
           ></textarea>
         </label>
-        <button class="button sm:col-span-2 sm:justify-self-start" type="submit" disabled>
+        <button class="button sm:col-span-2 sm:justify-self-start" type="submit">
           Send
         </button>
       </form>
     )}
 
     {p.slug === "newsletter" && (
-      <form class="mt-10 grid max-w-2xl gap-4 rounded-2xl bg-sand p-6 sm:grid-cols-2" onsubmit="return false">
-        <p class="rounded-lg bg-white px-4 py-3 text-sm sm:col-span-2">
-          Newsletter signup isn't connected yet. Check back soon.
-        </p>
-        <label class="grid gap-1 text-sm font-bold text-navy">
-          First name
-          <input
-            class="rounded-lg border border-slate-300 px-3 py-2 font-normal"
-            name="first_name"
-            autocomplete="given-name"
-          />
-        </label>
-        <label class="grid gap-1 text-sm font-bold text-navy">
-          Last name
-          <input
-            class="rounded-lg border border-slate-300 px-3 py-2 font-normal"
-            name="last_name"
-            autocomplete="family-name"
-          />
-        </label>
-        <label class="grid gap-1 text-sm font-bold text-navy sm:col-span-2">
-          Email
-          <input
-            class="rounded-lg border border-slate-300 px-3 py-2 font-normal"
-            type="email"
-            name="email"
-            required
-            autocomplete="email"
-          />
-        </label>
-        <label class="flex items-center gap-2 text-sm sm:col-span-2">
-          <input type="checkbox" name="consent" required /> Yes, subscribe me to your newsletter.
-        </label>
-        <button class="button sm:col-span-2 sm:justify-self-start" type="submit" disabled>
-          Subscribe
-        </button>
-      </form>
+      <>
+        <form
+          id="newsletter"
+          class="mt-10 grid max-w-2xl gap-4 rounded-2xl bg-sand p-6 sm:grid-cols-2"
+          method="post"
+          action={subscribeAction}
+        >
+          <input type="hidden" name="l" value={newsletterListId} />
+          <input type="hidden" name="next" value={checkYourEmail} />
+          {/* Listmonk keeps one name. The script below joins first and last into it; without it, there's none. */}
+          <input type="hidden" name="name" value="" />
+          <Honeypot name="nonce" />
+          <label class="grid gap-1 text-sm font-bold text-navy">
+            First name
+            <input
+              class="rounded-lg border border-slate-300 px-3 py-2 font-normal"
+              name="first_name"
+              autocomplete="given-name"
+            />
+          </label>
+          <label class="grid gap-1 text-sm font-bold text-navy">
+            Last name
+            <input
+              class="rounded-lg border border-slate-300 px-3 py-2 font-normal"
+              name="last_name"
+              autocomplete="family-name"
+            />
+          </label>
+          <label class="grid gap-1 text-sm font-bold text-navy sm:col-span-2">
+            Email
+            <input
+              class="rounded-lg border border-slate-300 px-3 py-2 font-normal"
+              type="email"
+              name="email"
+              required
+              autocomplete="email"
+            />
+          </label>
+          <label class="flex items-center gap-2 text-sm sm:col-span-2">
+            <input type="checkbox" name="consent" required /> Yes, subscribe me to your newsletter.
+          </label>
+          <button class="button sm:col-span-2 sm:justify-self-start" type="submit">
+            Subscribe
+          </button>
+        </form>
+        <script is:inline set:html={joinName} />
+      </>
     )}
 
     {p.sections.length > 0 && (
