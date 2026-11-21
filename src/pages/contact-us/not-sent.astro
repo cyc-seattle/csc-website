@@ -5,10 +5,10 @@ import { settings } from "../../lib/content.ts";
 
 <FormResult title="Message Not Sent" link={{ href: "/contact-us", label: "Back to Contact Us" }}>
   <p>
-    We couldn't send your message. Email us at
+    We couldn't send your message. Email us at{" "}
     <a class="font-bold text-navy underline" href={`mailto:${settings.email}`}>
       {settings.email}
     </a>
-    {settings.phone && <>or call {settings.phone}</>} instead.
+    {settings.phone ? ` or call ${settings.phone} instead.` : " instead."}
   </p>
 </FormResult>
