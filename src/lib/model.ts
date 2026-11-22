@@ -61,8 +61,8 @@ export interface DateGroup {
 }
 
 /**
- * Where a program's registration stands, from its offerings: open when a camp takes registrations, coming when
- * offerings are on sale but none takes them yet, and none when nothing is coming up.
+ * Where a program's registration stands, from its offerings: open when a camp takes registrations, coming when an
+ * offering that hasn't started yet isn't taking them yet, and none otherwise, such as a season already under way.
  */
 export type Registration = "open" | "coming" | "none";
 
@@ -401,7 +401,7 @@ export function buildContent(snapshot: Snapshot, today: string): Content {
       );
       const registration: Registration = dates.some((g) => g.registerUrl)
         ? "open"
-        : dates.length > 0
+        : dates.some((g) => g.rows.some((r) => r.startsOn !== null && r.startsOn > today))
           ? "coming"
           : "none";
       return [
