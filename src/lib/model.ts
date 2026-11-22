@@ -248,7 +248,7 @@ export function spotsLeft(capacity: number | null, confirmed: number, hidden: bo
 const clubspot = (campId: string) => `https://theclubspot.com/register/camp/${campId}/class`;
 
 /**
- * The offerings a page covering `programIds` shows, not over by `today`, grouped by their registration form in the
+ * The offerings a page covering `programIds` shows, dated and not over by `today`, grouped by their registration form in the
  * order they start, each row by the day it starts.
  */
 export function programDates(
@@ -261,7 +261,8 @@ export function programDates(
   const forms = new Map(snapshot.registration_forms.map((f) => [f.id, f]));
   const camps = new Map(snapshot.clubspot_camps.map((c) => [c.id, c]));
   const offerings = snapshot.offerings
-    .filter((o) => programIds.includes(o.program_id) && (o.ends_on === null || o.ends_on >= today))
+    // One with no end date, such as an old season Clubspot never dated, can't be shown as coming up.
+    .filter((o) => programIds.includes(o.program_id) && o.ends_on !== null && o.ends_on >= today)
     .toSorted((a, b) => (a.starts_on ?? "").localeCompare(b.starts_on ?? ""));
   const groups = new Map<string, DateGroup>();
   for (const o of offerings) {

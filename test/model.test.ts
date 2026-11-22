@@ -155,6 +155,15 @@ describe("what's on sale", () => {
     ]);
   });
 
+  it("leaves out an offering with no end date", () => {
+    const undated = {
+      ...fixtures,
+      offerings: fixtures.offerings.map((o) => (o.name === "Week 2" ? { ...o, ends_on: null } : o)),
+    };
+    const camp = buildContent(undated, today).programs.find((p) => p.slug === "learn-to-sail")!;
+    expect(camp.dates[0]!.rows.map((r) => r.label)).toEqual(["Week 1"]);
+  });
+
   it("has nothing for a page with no programs in the catalog", () => {
     expect(program("laser-race-team")).toMatchObject({ dates: [], registration: "none", ages: "" });
   });
