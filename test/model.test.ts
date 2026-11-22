@@ -155,6 +155,23 @@ describe("what's on sale", () => {
     ]);
   });
 
+  it("isn't coming soon when its season is already under way", () => {
+    const started = buildContent(fixtures, "2027-06-22").programs.find((p) => p.slug === "learn-to-sail")!;
+    expect(started.dates.flatMap((g) => g.rows.map((r) => r.label))).toEqual(["Week 1", "Week 2"]);
+    expect(started.registration).toBe("coming");
+    const under = buildContent(fixtures, "2027-06-29").programs.find((p) => p.slug === "learn-to-sail")!;
+    expect(under.registration).toBe("none");
+  });
+
+  it("leaves out an offering with no end date", () => {
+    const undated = {
+      ...fixtures,
+      offerings: fixtures.offerings.map((o) => (o.name === "Week 2" ? { ...o, ends_on: null } : o)),
+    };
+    const camp = buildContent(undated, today).programs.find((p) => p.slug === "learn-to-sail")!;
+    expect(camp.dates[0]!.rows.map((r) => r.label)).toEqual(["Week 1"]);
+  });
+
   it("has nothing for a page with no programs in the catalog", () => {
     expect(program("laser-race-team")).toMatchObject({ dates: [], registration: "none", ages: "" });
   });
