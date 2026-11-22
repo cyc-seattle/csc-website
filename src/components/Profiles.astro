@@ -38,7 +38,7 @@ const { title, items, compact = false } = Astro.props;
         ))}
       </div>
     ) : (
-      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div class="grid items-start gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {items.map((p) => (
           <article class="overflow-hidden rounded-xl bg-white shadow-md ring-1 ring-slate-100">
             <Img

@@ -30,13 +30,20 @@ export interface FaqTopic {
   questions: { question: string; answer: string }[];
 }
 
+/** One crew member's card in one list: their name, and the positions they hold that the list shows. */
 export interface Profile {
   id: Id;
   name: string;
   title: string;
   bio: string;
   photo: Id | undefined;
-  groups: string[];
+}
+
+/** A list on Our Crew, such as Instructors. */
+export interface CrewList {
+  id: Id;
+  title: string;
+  profiles: Profile[];
 }
 
 /** One offering on sale, as a program page lists it. */
@@ -160,7 +167,7 @@ export interface Content {
   pages: Page[];
   categories: Category[];
   programs: Program[];
-  profiles: Profile[];
+  crewLists: CrewList[];
   policies: Policy[];
   sponsorLevels: SponsorLevel[];
   sponsors: Sponsor[];
@@ -183,6 +190,70 @@ function linked<A extends string, B extends string, T>(
     .toSorted(bySort)
     .map((l) => rows.get(l[to]))
     .filter((r) => r !== undefined);
+}
+
+/** The name the site shows: the first name, or first and last when staff chose to show both. */
+export function crewName(person: { first_name: string | null; last_name: string | null }, full: boolean): string {
+  const first = person.first_name?.trim() ?? "";
+  const last = person.last_name?.trim() ?? "";
+  return full && last ? `${first} ${last}` : first;
+}
+
+/**
+ * Each list on Our Crew, in order: for each of its positions in turn, the crew members in it on `today`, by the name
+ * shown. Someone in two of a list's positions is one card, at the first, with both titles.
+ */
+export function crewLists(
+  snapshot: Pick<
+    Snapshot,
+    | "website_crew_sections"
+    | "website_crew_sections_positions"
+    | "crew_members"
+    | "crew_terms"
+    | "crew_positions"
+    | "people"
+  >,
+  today: string,
+): CrewList[] {
+  const people = new Map(snapshot.people.map((p) => [p.id, p]));
+  const positions = new Map(snapshot.crew_positions.map((p) => [p.id, p.name]));
+  const members = new Map(snapshot.crew_members.map((m) => [m.id, m]));
+  const current = snapshot.crew_terms.filter(
+    (t) => (t.starts_on === null || t.starts_on <= today) && (t.ends_on === null || t.ends_on >= today),
+  );
+  return snapshot.website_crew_sections.toSorted(bySort).map((section): CrewList => {
+    const cards = new Map<Id, Profile>();
+    for (const link of snapshot.website_crew_sections_positions
+      .filter((l) => l.section_id === section.id)
+      .toSorted(bySort)) {
+      const title = positions.get(link.position_id);
+      if (title === undefined) continue;
+      const holders = current
+        .filter((t) => t.position_id === link.position_id)
+        .flatMap((t) => {
+          const member = members.get(t.crew_member_id);
+          const person = member && people.get(member.person_id);
+          const name = member && person ? crewName(person, member.show_full_name) : "";
+          return member && name ? [{ member, name }] : [];
+        })
+        .toSorted((a, b) => a.name.localeCompare(b.name));
+      for (const { member, name } of holders) {
+        const card = cards.get(member.id);
+        if (card) {
+          if (!card.title.split(", ").includes(title)) card.title = `${card.title}, ${title}`;
+          continue;
+        }
+        cards.set(member.id, {
+          id: member.id,
+          name,
+          title,
+          bio: member.website_bio ?? "",
+          photo: member.website_photo ?? undefined,
+        });
+      }
+    }
+    return { id: section.id, title: section.title, profiles: [...cards.values()] };
+  });
 }
 
 function action(label: string | null, url: string | null): Action | undefined {
@@ -373,15 +444,8 @@ export function buildContent(snapshot: Snapshot, today: string): Content {
 
   const topics = faqTopics(snapshot);
 
-  const profiles = snapshot.website_profiles.toSorted(bySort).map((p): Profile => ({
-    id: p.id,
-    name: p.name,
-    title: p.title ?? "",
-    bio: p.bio ?? "",
-    photo: p.photo ?? undefined,
-    groups: p.groups ?? [],
-  }));
-  const profileById = new Map(profiles.map((p) => [p.id, p]));
+  const lists = crewLists(snapshot, today);
+  const listById = new Map(lists.map((l) => [l.id, l]));
 
   const programRows = snapshot.website_programs.filter((p) => p.status === "published").toSorted(bySort);
   const catalog = new Map(snapshot.programs.map((p) => [p.id, p]));
@@ -448,7 +512,7 @@ export function buildContent(snapshot: Snapshot, today: string): Content {
       testimonial: c.testimonial ?? "",
       programs: listed,
       faqTopics: linked(snapshot.website_categories_faq_topics, "category_id", "topic_id", c.id, topics),
-      profiles: linked(snapshot.website_categories_profiles, "category_id", "profile_id", c.id, profileById),
+      profiles: (c.crew_section_id && listById.get(c.crew_section_id)?.profiles) || [],
       gallery: snapshot.website_categories_files
         .filter((f) => f.category_id === c.id)
         .toSorted(bySort)
@@ -509,7 +573,7 @@ export function buildContent(snapshot: Snapshot, today: string): Content {
     pages,
     categories,
     programs: [...programById.values()],
-    profiles,
+    crewLists: lists,
     policies,
     sponsorLevels,
     sponsors,

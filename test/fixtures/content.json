@@ -244,7 +244,8 @@
       "banner": "00000000-0000-4000-8000-000000000003",
       "top": "Camps run Monday to Friday, all summer.\n\nEvery camper wears a life jacket on the dock and on the water.",
       "bottom": "## Camp Schedule\n\n| Week | Camp |\n| --- | --- |\n| 1 | Learn to Sail |\n| 2 | Learn to Sail |\n| 3 | Adventure Camp |",
-      "testimonial": "Our kid came home every day talking about the boats."
+      "testimonial": "Our kid came home every day talking about the boats.",
+      "crew_section_id": "00000000-0000-4000-8019-000000000003"
     },
     {
       "id": "00000000-0000-4000-8003-000000000002",
@@ -257,7 +258,8 @@
       "banner": "00000000-0000-4000-8000-000000000004",
       "top": "Our teams practice after school and race on weekends.",
       "bottom": "## Watch a Practice\n\n<video controls preload=\"none\" src=\"00000000-0000-4000-8000-000000000011\" poster=\"00000000-0000-4000-8000-000000000004\"></video>",
-      "testimonial": null
+      "testimonial": null,
+      "crew_section_id": "00000000-0000-4000-8019-000000000002"
     },
     {
       "id": "00000000-0000-4000-8003-000000000003",
@@ -270,7 +272,8 @@
       "banner": null,
       "top": "Members check out a dinghy for the afternoon.",
       "bottom": null,
-      "testimonial": null
+      "testimonial": null,
+      "crew_section_id": null
     },
     {
       "id": "00000000-0000-4000-8003-000000000004",
@@ -283,7 +286,8 @@
       "banner": "00000000-0000-4000-8000-000000000003",
       "top": "Dates for next year aren't set yet.",
       "bottom": null,
-      "testimonial": null
+      "testimonial": null,
+      "crew_section_id": null
     }
   ],
   "website_categories_programs": [
@@ -342,26 +346,6 @@
       "category_id": "00000000-0000-4000-8003-000000000001",
       "topic_id": "00000000-0000-4000-8005-000000000004",
       "sort": 3
-    }
-  ],
-  "website_categories_profiles": [
-    {
-      "id": "00000000-0000-4000-800c-000000000011",
-      "category_id": "00000000-0000-4000-8003-000000000001",
-      "profile_id": "00000000-0000-4000-8007-000000000001",
-      "sort": 1
-    },
-    {
-      "id": "00000000-0000-4000-800c-000000000012",
-      "category_id": "00000000-0000-4000-8003-000000000001",
-      "profile_id": "00000000-0000-4000-8007-000000000004",
-      "sort": 2
-    },
-    {
-      "id": "00000000-0000-4000-800c-000000000013",
-      "category_id": "00000000-0000-4000-8003-000000000002",
-      "profile_id": "00000000-0000-4000-8007-000000000003",
-      "sort": 1
     }
   ],
   "website_categories_files": [
@@ -553,44 +537,6 @@
       "sort": 2,
       "question": "How do I apply?",
       "answer": "Fill in the form before you register."
-    }
-  ],
-  "website_profiles": [
-    {
-      "id": "00000000-0000-4000-8007-000000000001",
-      "name": "Casey Example",
-      "title": "Program Director",
-      "sort": 1,
-      "bio": "Made-up person. Has taught sailing for years.",
-      "photo": "00000000-0000-4000-8000-000000000008",
-      "groups": ["staff"]
-    },
-    {
-      "id": "00000000-0000-4000-8007-000000000002",
-      "name": "Jordan Sample",
-      "title": "Board Chair",
-      "sort": 2,
-      "bio": "Made-up person.",
-      "photo": "00000000-0000-4000-8000-000000000009",
-      "groups": ["officers"]
-    },
-    {
-      "id": "00000000-0000-4000-8007-000000000003",
-      "name": "Riley Placeholder",
-      "title": "Head Coach",
-      "sort": 3,
-      "bio": "Made-up person. Coaches the Opti team.",
-      "photo": "00000000-0000-4000-8000-000000000008",
-      "groups": ["coach"]
-    },
-    {
-      "id": "00000000-0000-4000-8007-000000000004",
-      "name": "Morgan Test",
-      "title": "Sailing Instructor",
-      "sort": 4,
-      "bio": "",
-      "photo": null,
-      "groups": ["instructor"]
     }
   ],
   "website_policies": [
@@ -926,6 +872,192 @@
       "price_cents": 65000,
       "capacity": 12,
       "confirmed_count": 12
+    }
+  ],
+  "people": [
+    {
+      "id": "00000000-0000-4000-8017-000000000001",
+      "first_name": "Casey",
+      "last_name": "Example"
+    },
+    {
+      "id": "00000000-0000-4000-8017-000000000002",
+      "first_name": "Jordan",
+      "last_name": "Sample"
+    },
+    {
+      "id": "00000000-0000-4000-8017-000000000003",
+      "first_name": "Riley",
+      "last_name": "Placeholder"
+    },
+    {
+      "id": "00000000-0000-4000-8017-000000000004",
+      "first_name": "Morgan",
+      "last_name": "Test"
+    },
+    {
+      "id": "00000000-0000-4000-8017-000000000005",
+      "first_name": "Avery",
+      "last_name": "Former"
+    }
+  ],
+  "crew_positions": [
+    {
+      "id": "00000000-0000-4000-8018-000000000001",
+      "name": "Program Director"
+    },
+    {
+      "id": "00000000-0000-4000-8018-000000000002",
+      "name": "Board Chair"
+    },
+    {
+      "id": "00000000-0000-4000-8018-000000000003",
+      "name": "Head Coach"
+    },
+    {
+      "id": "00000000-0000-4000-8018-000000000004",
+      "name": "Sailing Instructor"
+    }
+  ],
+  "crew_members": [
+    {
+      "id": "00000000-0000-4000-8007-000000000001",
+      "person_id": "00000000-0000-4000-8017-000000000001",
+      "show_full_name": true,
+      "website_bio": "Made-up person. Has taught sailing for years.",
+      "website_photo": "00000000-0000-4000-8000-000000000008"
+    },
+    {
+      "id": "00000000-0000-4000-8007-000000000002",
+      "person_id": "00000000-0000-4000-8017-000000000002",
+      "show_full_name": true,
+      "website_bio": "Made-up person.",
+      "website_photo": "00000000-0000-4000-8000-000000000009"
+    },
+    {
+      "id": "00000000-0000-4000-8007-000000000003",
+      "person_id": "00000000-0000-4000-8017-000000000003",
+      "show_full_name": true,
+      "website_bio": "Made-up person. Coaches the Opti team.",
+      "website_photo": "00000000-0000-4000-8000-000000000008"
+    },
+    {
+      "id": "00000000-0000-4000-8007-000000000004",
+      "person_id": "00000000-0000-4000-8017-000000000004",
+      "show_full_name": false,
+      "website_bio": null,
+      "website_photo": null
+    },
+    {
+      "id": "00000000-0000-4000-8007-000000000005",
+      "person_id": "00000000-0000-4000-8017-000000000005",
+      "show_full_name": true,
+      "website_bio": "Made-up person.",
+      "website_photo": null
+    }
+  ],
+  "crew_terms": [
+    {
+      "id": "00000000-0000-4000-801a-000000000001",
+      "crew_member_id": "00000000-0000-4000-8007-000000000001",
+      "position_id": "00000000-0000-4000-8018-000000000001",
+      "starts_on": "2024-03-01",
+      "ends_on": null
+    },
+    {
+      "id": "00000000-0000-4000-801a-000000000002",
+      "crew_member_id": "00000000-0000-4000-8007-000000000002",
+      "position_id": "00000000-0000-4000-8018-000000000002",
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "id": "00000000-0000-4000-801a-000000000003",
+      "crew_member_id": "00000000-0000-4000-8007-000000000003",
+      "position_id": "00000000-0000-4000-8018-000000000003",
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "id": "00000000-0000-4000-801a-000000000004",
+      "crew_member_id": "00000000-0000-4000-8007-000000000003",
+      "position_id": "00000000-0000-4000-8018-000000000004",
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "id": "00000000-0000-4000-801a-000000000005",
+      "crew_member_id": "00000000-0000-4000-8007-000000000004",
+      "position_id": "00000000-0000-4000-8018-000000000004",
+      "starts_on": "2025-06-01",
+      "ends_on": null
+    },
+    {
+      "id": "00000000-0000-4000-801a-000000000006",
+      "crew_member_id": "00000000-0000-4000-8007-000000000005",
+      "position_id": "00000000-0000-4000-8018-000000000004",
+      "starts_on": "2020-06-01",
+      "ends_on": "2021-08-31"
+    }
+  ],
+  "website_crew_sections": [
+    {
+      "id": "00000000-0000-4000-8019-000000000001",
+      "title": "Staff",
+      "sort": 1
+    },
+    {
+      "id": "00000000-0000-4000-8019-000000000002",
+      "title": "Coaches",
+      "sort": 2
+    },
+    {
+      "id": "00000000-0000-4000-8019-000000000003",
+      "title": "Instructors",
+      "sort": 3
+    },
+    {
+      "id": "00000000-0000-4000-8019-000000000004",
+      "title": "Volunteers",
+      "sort": 4
+    }
+  ],
+  "website_crew_sections_positions": [
+    {
+      "id": "00000000-0000-4000-801b-000000000001",
+      "section_id": "00000000-0000-4000-8019-000000000001",
+      "position_id": "00000000-0000-4000-8018-000000000001",
+      "sort": 1
+    },
+    {
+      "id": "00000000-0000-4000-801b-000000000002",
+      "section_id": "00000000-0000-4000-8019-000000000002",
+      "position_id": "00000000-0000-4000-8018-000000000003",
+      "sort": 1
+    },
+    {
+      "id": "00000000-0000-4000-801b-000000000003",
+      "section_id": "00000000-0000-4000-8019-000000000003",
+      "position_id": "00000000-0000-4000-8018-000000000004",
+      "sort": 1
+    },
+    {
+      "id": "00000000-0000-4000-801b-000000000004",
+      "section_id": "00000000-0000-4000-8019-000000000004",
+      "position_id": "00000000-0000-4000-8018-000000000002",
+      "sort": 1
+    },
+    {
+      "id": "00000000-0000-4000-801b-000000000005",
+      "section_id": "00000000-0000-4000-8019-000000000001",
+      "position_id": "00000000-0000-4000-8018-000000000003",
+      "sort": 2
+    },
+    {
+      "id": "00000000-0000-4000-801b-000000000006",
+      "section_id": "00000000-0000-4000-8019-000000000003",
+      "position_id": "00000000-0000-4000-8018-000000000003",
+      "sort": 2
     }
   ]
 }
