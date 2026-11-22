@@ -15,7 +15,7 @@ const snapshot = JSON.parse(readFileSync(".content/content.json", "utf8")) as Sn
 const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/Los_Angeles" });
 const content = buildContent(snapshot, today);
 
-export const { settings, pages, categories, programs, profiles, policies, sponsorLevels, sponsors } = content;
+export const { settings, pages, categories, programs, crewLists, policies, sponsorLevels, sponsors } = content;
 
 export function page(slug: string): Page {
   const found = pages.find((p) => p.slug === slug);

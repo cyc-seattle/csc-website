@@ -47,12 +47,12 @@ Every word and picture on the site comes from Directus. Change content there, no
   to resize them, so the pull runs first, not during the build.
 - `CONTENT_SOURCE` picks where it comes from. `fixtures`, the default, copies `test/fixtures/`. `directus` reads
   `DIRECTUS_URL` (dev is `https://directus.dev.cycsail.team`, prod `https://directus.cycsail.team`) with
-  `DIRECTUS_TOKEN`, the Website Build user's token, which can read only the `website_*` collections and the Website
-  folder's files. Its value is in Secret Manager as `dev-csc-website-directus-token` and `csc-website-directus-token`.
+  `DIRECTUS_TOKEN`, the Website Build user's token, which can read only the `website_*` collections, what's on sale
+  from the catalog, crew on the website with their current terms and names, and the Website folder's files. Its value is in Secret Manager as `dev-csc-website-directus-token` and `csc-website-directus-token`.
   Never print it.
 - `src/lib/content.ts` is the only module pages import content from. It reads the snapshot and hands it to
   `src/lib/model.ts`, which turns the rows into what the pages show: categories with their programs, FAQ topics and
-  crew, the policy version in effect, and where each program's button goes. `src/lib/snapshot.ts` types the rows.
+  crew, Our Crew's lists from Crew (a crew member shows by first name unless staff chose their full name), the policy version in effect, and where each program's button goes. `src/lib/snapshot.ts` types the rows.
 - `test/fixtures/` is made-up content in the same shape, with drawn pictures. CI, the smoke test and screenshots use
   it. Never put real content or photos there: the repo is public.
 - Text fields are Markdown, rendered as trusted HTML (`src/components/Markdown.astro`). Markdown names a picture or

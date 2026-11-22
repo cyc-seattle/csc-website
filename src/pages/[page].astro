@@ -8,7 +8,7 @@ import Img from "../components/Img.astro";
 import Faqs from "../components/Faqs.astro";
 import Profiles from "../components/Profiles.astro";
 import Honeypot from "../components/Honeypot.astro";
-import { pages, profiles, sponsorLevels, sponsors, categories, dollars, type Page } from "../lib/content.ts";
+import { pages, crewLists, sponsorLevels, sponsors, categories, dollars, type Page } from "../lib/content.ts";
 import { checkYourEmail, contactAction, newsletterListId, subscribeAction } from "../lib/forms.ts";
 import joinName from "../scripts/join-name.js?raw";
 
@@ -16,7 +16,6 @@ export function getStaticPaths() {
   return pages.filter((p) => p.slug !== "home").map((page) => ({ params: { page: page.slug }, props: { page } }));
 }
 const { page: p } = Astro.props as { page: Page };
-const group = (name: string) => profiles.filter((x) => x.groups.includes(name));
 ---
 
 <Base title={p.title} description={p.description} shareImage={p.image ?? p.banner}>
@@ -215,10 +214,9 @@ const group = (name: string) => profiles.filter((x) => x.groups.includes(name));
 
   {p.slug === "our-crew" && (
     <>
-      <Profiles title="Staff" items={group("staff")} />
-      <Profiles title="Our Board of Directors" items={group("officers")} />
-      <Profiles title="Our Junior Racing Coaches" items={group("coach")} />
-      <Profiles title="Our Sailing Instructors" items={group("instructor")} />
+      {crewLists.map((list) => (
+        <Profiles title={list.title} items={list.profiles} />
+      ))}
     </>
   )}
   <Faqs topics={p.faqTopics} />

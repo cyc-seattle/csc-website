@@ -54,6 +54,8 @@ export interface CategoryRow {
   top: string | null;
   bottom: string | null;
   testimonial: string | null;
+  /** The crew list its Meet Our Crew shows. */
+  crew_section_id: Id | null;
 }
 
 export interface ProgramRow {
@@ -119,14 +121,41 @@ export interface FaqRow {
   answer: string | null;
 }
 
-export interface ProfileRow {
+/** A crew member, as the Website Build user may read one: only while they're on the website. */
+export interface CrewMemberRow {
+  id: Id;
+  person_id: Id;
+  show_full_name: boolean;
+  website_bio: string | null;
+  website_photo: Id | null;
+}
+
+/** A crew member's term in a position. The Website Build user reads only current ones. */
+export interface CrewTermRow {
+  id: Id;
+  crew_member_id: Id;
+  position_id: Id;
+  starts_on: string | null;
+  ends_on: string | null;
+}
+
+export interface CrewPositionRow {
   id: Id;
   name: string;
-  title: string | null;
+}
+
+/** A crew member's person: only the name, and only of crew on the website. */
+export interface PersonRow {
+  id: Id;
+  first_name: string | null;
+  last_name: string | null;
+}
+
+/** A list on Our Crew, such as Instructors, of positions in order. */
+export interface CrewSectionRow {
+  id: Id;
+  title: string;
   sort: number | null;
-  bio: string | null;
-  photo: Id | null;
-  groups: string[] | null;
 }
 
 export interface PolicyRow {
@@ -181,14 +210,18 @@ export interface Snapshot {
   website_categories: CategoryRow[];
   website_categories_programs: Link<"category_id", "program_id">[];
   website_categories_faq_topics: Link<"category_id", "topic_id">[];
-  website_categories_profiles: Link<"category_id", "profile_id">[];
   website_categories_files: Link<"category_id", "file_id">[];
   website_programs: ProgramRow[];
   website_programs_files: Link<"program_id", "file_id">[];
   website_programs_catalog_programs: Link<"website_program_id", "catalog_program_id">[];
   website_faq_topics: FaqTopicRow[];
   website_faqs: FaqRow[];
-  website_profiles: ProfileRow[];
+  website_crew_sections: CrewSectionRow[];
+  website_crew_sections_positions: Link<"section_id", "position_id">[];
+  crew_members: CrewMemberRow[];
+  crew_terms: CrewTermRow[];
+  crew_positions: CrewPositionRow[];
+  people: PersonRow[];
   website_policies: PolicyRow[];
   website_policy_versions: PolicyVersionRow[];
   website_sponsor_levels: SponsorLevelRow[];
@@ -209,14 +242,18 @@ export const collections = [
   "website_categories",
   "website_categories_programs",
   "website_categories_faq_topics",
-  "website_categories_profiles",
   "website_categories_files",
   "website_programs",
   "website_programs_files",
   "website_programs_catalog_programs",
   "website_faq_topics",
   "website_faqs",
-  "website_profiles",
+  "website_crew_sections",
+  "website_crew_sections_positions",
+  "crew_members",
+  "crew_terms",
+  "crew_positions",
+  "people",
   "website_policies",
   "website_policy_versions",
   "website_sponsor_levels",
@@ -233,7 +270,7 @@ export function snapshotFilename(id: Id, filenameDownload: string): string {
   return dot > 0 ? id + filenameDownload.slice(dot).toLowerCase() : id;
 }
 
-const fileFields = new Set(["logo", "badge", "banner", "image", "card_image", "photo", "file_id"]);
+const fileFields = new Set(["logo", "badge", "banner", "image", "card_image", "photo", "website_photo", "file_id"]);
 
 /** Every file ID the content names in a picture field or a photo list. */
 export function referencedFiles(snapshot: Omit<Snapshot, "files">): Set<Id> {

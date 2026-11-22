@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   ages,
   buildContent,
+  crewName,
   categoryStatus,
   datesSummary,
   dayRange,
@@ -261,8 +262,39 @@ describe("buildContent", () => {
       "adventure-sailing",
     ]);
     const camp = content.categories[0]!;
-    expect(camp.profiles.map((p) => p.name)).toEqual(["Casey Example", "Morgan Test"]);
+    expect(camp.profiles.map((p) => p.name)).toEqual(["Morgan", "Riley Placeholder"]);
     expect(camp.gallery).toHaveLength(5);
+  });
+
+  it("shows a category's crew list, or none when it has no list", () => {
+    const [camp, teams, boating] = content.categories;
+    expect(teams!.profiles.map((p) => p.name)).toEqual(["Riley Placeholder"]);
+    expect(boating!.profiles).toEqual([]);
+    expect(camp!.profiles.map((p) => p.name)).toEqual(["Morgan", "Riley Placeholder"]);
+  });
+
+  it("builds Our Crew's lists in order, each by its positions' order, then by name", () => {
+    expect(content.crewLists.map((l) => [l.title, l.profiles.map((p) => `${p.name}: ${p.title}`)])).toEqual([
+      ["Staff", ["Casey Example: Program Director", "Riley Placeholder: Head Coach"]],
+      ["Coaches", ["Riley Placeholder: Head Coach"]],
+      ["Instructors", ["Morgan: Sailing Instructor", "Riley Placeholder: Sailing Instructor, Head Coach"]],
+      ["Volunteers", ["Jordan Sample: Board Chair"]],
+    ]);
+  });
+
+  it("shows the first name alone, unless staff chose the full name", () => {
+    const person = { first_name: "Casey", last_name: "Example" };
+    expect(crewName(person, false)).toBe("Casey");
+    expect(crewName(person, true)).toBe("Casey Example");
+    expect(crewName({ first_name: "Casey", last_name: null }, true)).toBe("Casey");
+  });
+
+  it("leaves out a term that has ended, or hasn't started", () => {
+    const names = (today: string) =>
+      buildContent(fixtures, today).crewLists.flatMap((l) => l.profiles.map((p) => p.name));
+    expect(names("2026-11-22")).not.toContain("Avery Former");
+    expect(names("2021-01-01")).toContain("Avery Former");
+    expect(names("2024-01-01")).not.toContain("Casey Example");
   });
 
   it("splits the address into lines", () => {
