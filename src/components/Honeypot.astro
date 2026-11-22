@@ -1,0 +1,15 @@
+---
+// A field people never see and bots fill in. A form that comes back with it filled is a bot's, and is
+// dropped. Off the page, not display:none, which some bots skip; hidden from screen readers and Tab.
+interface Props {
+  name: string;
+}
+const { name } = Astro.props;
+---
+
+<div class="absolute -left-[9999px]" aria-hidden="true">
+  <label>
+    Leave this empty
+    <input type="text" name={name} value="" tabindex="-1" autocomplete="off" />
+  </label>
+</div>

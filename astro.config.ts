@@ -6,6 +6,7 @@ import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 import type { AstroIntegration } from "astro";
 import { defineConfig } from "astro/config";
+import { resultPages } from "./src/lib/result-pages.ts";
 
 /** Serves the snapshot's videos, .content/media/, at /media: from the dev server, and copied into dist/media/. */
 const media: AstroIntegration = {
@@ -32,6 +33,6 @@ export default defineConfig({
   // Every page is a file, such as /donate.html, so Firebase Hosting's clean URLs keep Wix's paths: /donate.
   trailingSlash: "never",
   build: { format: "file" },
-  integrations: [sitemap(), media],
+  integrations: [sitemap({ filter: (page) => !resultPages.includes(new URL(page).pathname) }), media],
   vite: { plugins: [tailwindcss()] },
 });
