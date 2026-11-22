@@ -409,9 +409,7 @@
       "card_button_label": null,
       "card_link": null,
       "banner": null,
-      "body": "## What to Bring\n\n- A swimsuit and a towel\n- Sunscreen\n- A lunch and a water bottle",
-      "registration_label": null,
-      "registration_url": null
+      "body": "## What to Bring\n\n- A swimsuit and a towel\n- Sunscreen\n- A lunch and a water bottle"
     },
     {
       "id": "00000000-0000-4000-8004-000000000002",
@@ -425,9 +423,7 @@
       "card_button_label": null,
       "card_link": null,
       "banner": null,
-      "body": "",
-      "registration_label": null,
-      "registration_url": null
+      "body": ""
     },
     {
       "id": "00000000-0000-4000-8004-000000000003",
@@ -441,9 +437,7 @@
       "card_button_label": null,
       "card_link": null,
       "banner": null,
-      "body": "Practices are twice a week. Sailors need to swim and to have sailed a full summer.",
-      "registration_label": "Sign Up",
-      "registration_url": "https://register.example.org/opti"
+      "body": "Practices are twice a week. Sailors need to swim and to have sailed a full summer."
     },
     {
       "id": "00000000-0000-4000-8004-000000000004",
@@ -457,9 +451,7 @@
       "card_button_label": null,
       "card_link": null,
       "banner": null,
-      "body": "",
-      "registration_label": null,
-      "registration_url": null
+      "body": ""
     },
     {
       "id": "00000000-0000-4000-8004-000000000005",
@@ -473,9 +465,7 @@
       "card_button_label": null,
       "card_link": null,
       "banner": null,
-      "body": "",
-      "registration_label": null,
-      "registration_url": null
+      "body": ""
     },
     {
       "id": "00000000-0000-4000-8004-000000000006",
@@ -489,9 +479,7 @@
       "card_button_label": null,
       "card_link": null,
       "banner": null,
-      "body": "",
-      "registration_label": null,
-      "registration_url": null
+      "body": ""
     }
   ],
   "website_programs_files": [
@@ -768,6 +756,176 @@
       "type": "application/octet-stream",
       "title": "Fixture 11",
       "description": "A short drawn clip"
+    }
+  ],
+  "programs": [
+    {
+      "id": "00000000-0000-4000-8009-000000000001",
+      "name": "Learn to Sail",
+      "min_age": 8,
+      "max_age": 12
+    },
+    {
+      "id": "00000000-0000-4000-8009-000000000002",
+      "name": "Adventure Camp",
+      "min_age": 12,
+      "max_age": 16
+    },
+    {
+      "id": "00000000-0000-4000-8009-000000000003",
+      "name": "Opti Development Race Team",
+      "min_age": 8,
+      "max_age": 13
+    },
+    {
+      "id": "00000000-0000-4000-8009-000000000004",
+      "name": "Opti Race Team",
+      "min_age": 10,
+      "max_age": 15
+    },
+    {
+      "id": "00000000-0000-4000-8009-000000000005",
+      "name": "Opti Regional Race Team",
+      "min_age": 10,
+      "max_age": 15
+    }
+  ],
+  "website_programs_catalog_programs": [
+    {
+      "id": "00000000-0000-4000-8009-000000000101",
+      "website_program_id": "00000000-0000-4000-8004-000000000001",
+      "catalog_program_id": "00000000-0000-4000-8009-000000000001",
+      "sort": 1
+    },
+    {
+      "id": "00000000-0000-4000-8009-000000000102",
+      "website_program_id": "00000000-0000-4000-8004-000000000002",
+      "catalog_program_id": "00000000-0000-4000-8009-000000000002",
+      "sort": 1
+    },
+    {
+      "id": "00000000-0000-4000-8009-000000000103",
+      "website_program_id": "00000000-0000-4000-8004-000000000003",
+      "catalog_program_id": "00000000-0000-4000-8009-000000000003",
+      "sort": 1
+    },
+    {
+      "id": "00000000-0000-4000-8009-000000000104",
+      "website_program_id": "00000000-0000-4000-8004-000000000003",
+      "catalog_program_id": "00000000-0000-4000-8009-000000000004",
+      "sort": 2
+    },
+    {
+      "id": "00000000-0000-4000-8009-000000000105",
+      "website_program_id": "00000000-0000-4000-8004-000000000003",
+      "catalog_program_id": "00000000-0000-4000-8009-000000000005",
+      "sort": 3
+    }
+  ],
+  "registration_forms": [
+    {
+      "id": "00000000-0000-4000-8009-000000000201",
+      "name": "2027 Summer Sailing Camps",
+      "opens_on": "2027-02-22",
+      "clubspot_camp_id": null
+    },
+    {
+      "id": "00000000-0000-4000-8009-000000000202",
+      "name": "2027 Spring Singlehanded Race Teams",
+      "opens_on": "2026-11-01",
+      "clubspot_camp_id": "springOpti"
+    },
+    {
+      "id": "00000000-0000-4000-8009-000000000203",
+      "name": "2026 Summer Sailing Camps",
+      "opens_on": "2026-02-22",
+      "clubspot_camp_id": "summer2026"
+    }
+  ],
+  "clubspot_camps": [
+    {
+      "id": "springOpti",
+      "registration_closed": false,
+      "hide_spots_left": false
+    }
+  ],
+  "offerings": [
+    {
+      "id": "00000000-0000-4000-8009-000000000301",
+      "program_id": "00000000-0000-4000-8009-000000000001",
+      "name": "Week 1",
+      "registration_form_id": "00000000-0000-4000-8009-000000000201",
+      "starts_on": "2027-06-21",
+      "ends_on": "2027-06-25",
+      "price_cents": 67500,
+      "capacity": 12,
+      "confirmed_count": 0
+    },
+    {
+      "id": "00000000-0000-4000-8009-000000000302",
+      "program_id": "00000000-0000-4000-8009-000000000001",
+      "name": "Week 2",
+      "registration_form_id": "00000000-0000-4000-8009-000000000201",
+      "starts_on": "2027-06-28",
+      "ends_on": "2027-07-02",
+      "price_cents": 67500,
+      "capacity": 12,
+      "confirmed_count": 0
+    },
+    {
+      "id": "00000000-0000-4000-8009-000000000303",
+      "program_id": "00000000-0000-4000-8009-000000000002",
+      "name": "Week 4",
+      "registration_form_id": "00000000-0000-4000-8009-000000000201",
+      "starts_on": "2027-07-12",
+      "ends_on": "2027-07-16",
+      "price_cents": 85000,
+      "capacity": 10,
+      "confirmed_count": 0
+    },
+    {
+      "id": "00000000-0000-4000-8009-000000000304",
+      "program_id": "00000000-0000-4000-8009-000000000003",
+      "name": "Spring",
+      "registration_form_id": "00000000-0000-4000-8009-000000000202",
+      "starts_on": "2027-03-01",
+      "ends_on": "2027-05-23",
+      "price_cents": 67500,
+      "capacity": 10,
+      "confirmed_count": 9
+    },
+    {
+      "id": "00000000-0000-4000-8009-000000000305",
+      "program_id": "00000000-0000-4000-8009-000000000004",
+      "name": "Spring",
+      "registration_form_id": "00000000-0000-4000-8009-000000000202",
+      "starts_on": "2027-03-01",
+      "ends_on": "2027-05-23",
+      "price_cents": 75000,
+      "capacity": 10,
+      "confirmed_count": 10
+    },
+    {
+      "id": "00000000-0000-4000-8009-000000000306",
+      "program_id": "00000000-0000-4000-8009-000000000005",
+      "name": "Spring",
+      "registration_form_id": "00000000-0000-4000-8009-000000000202",
+      "starts_on": "2027-03-01",
+      "ends_on": "2027-05-23",
+      "price_cents": 140000,
+      "capacity": 10,
+      "confirmed_count": 2
+    },
+    {
+      "id": "00000000-0000-4000-8009-000000000307",
+      "program_id": "00000000-0000-4000-8009-000000000001",
+      "name": "Week 1",
+      "registration_form_id": "00000000-0000-4000-8009-000000000203",
+      "starts_on": "2026-06-22",
+      "ends_on": "2026-06-26",
+      "price_cents": 65000,
+      "capacity": 12,
+      "confirmed_count": 12
     }
   ]
 }

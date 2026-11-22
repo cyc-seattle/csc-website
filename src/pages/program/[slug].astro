@@ -5,6 +5,7 @@ import Markdown from "../../components/Markdown.astro";
 import StatusNotice from "../../components/StatusNotice.astro";
 import Gallery from "../../components/Gallery.astro";
 import Img from "../../components/Img.astro";
+import ProgramDates from "../../components/ProgramDates.astro";
 import { programs, categoryOf, programAction, type Program } from "../../lib/content.ts";
 
 export function getStaticPaths() {
@@ -12,10 +13,14 @@ export function getStaticPaths() {
 }
 const { program: p } = Astro.props as { program: Program };
 const category = categoryOf(p.slug);
-const status = category?.status ?? "closed";
+// A program's own offerings decide its notice. With none coming up, its category's status does.
+const status =
+  p.registration === "open" ? "open" : p.registration === "coming" ? "coming_soon" : (category?.status ?? "closed");
+const opensOn = p.dates.map((g) => g.opensOn).find(Boolean);
 // On its own page, a program's button only ever signs people up.
 const action = programAction(p, status);
 const register = action.href.startsWith("http") ? action : undefined;
+const ages = p.ages || p.subtitle;
 ---
 
 <Base title={p.title} description={p.summary} shareImage={p.cardImage}>
@@ -29,14 +34,15 @@ const register = action.href.startsWith("http") ? action : undefined;
       </nav>
     )}
     <div class="flex flex-wrap items-center justify-between gap-4 py-6">
-      {p.subtitle && <p class="text-xl font-bold uppercase tracking-wide text-signal">{p.subtitle}</p>}
+      {ages && <p class="text-xl font-bold uppercase tracking-wide text-signal">{ages}</p>}
       {register && (
         <a class="button" href={register.href}>
           {register.label}
         </a>
       )}
     </div>
-    <StatusNotice status={status} />
+    <StatusNotice status={status} opensOn={opensOn} />
+    <ProgramDates groups={p.dates} />
     {p.body ? (
       <Markdown source={p.body} />
     ) : (

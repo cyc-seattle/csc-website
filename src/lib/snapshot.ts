@@ -1,4 +1,5 @@
-// The content snapshot: the website_* rows as Directus returns them, plus the Website folder's files.
+// The content snapshot: the website_* rows as Directus returns them, what's on sale from the catalog, plus the
+// Website folder's files.
 // scripts/pull-content.ts writes it, from Directus or from test/fixtures/. Only the fields the site reads are typed.
 
 export type Id = string;
@@ -66,8 +67,42 @@ export interface ProgramRow {
   card_image: Id | null;
   banner: Id | null;
   body: string | null;
-  registration_label: string | null;
-  registration_url: string | null;
+}
+
+/** A catalog program, as much of it as the Website Build reads. */
+export interface CatalogProgramRow {
+  id: Id;
+  name: string;
+  min_age: number | null;
+  max_age: number | null;
+}
+
+/** What CSC sells: one program for one dated period. The Website Build reads only those not archived. */
+export interface OfferingRow {
+  id: Id;
+  program_id: Id;
+  name: string | null;
+  registration_form_id: Id | null;
+  starts_on: string | null;
+  ends_on: string | null;
+  price_cents: number | null;
+  capacity: number | null;
+  confirmed_count: number;
+}
+
+/** What families sign up on at once, such as 2027 Summer Sailing Camps: one Clubspot camp. */
+export interface RegistrationFormRow {
+  id: Id;
+  name: string;
+  opens_on: string | null;
+  clubspot_camp_id: string | null;
+}
+
+/** A Clubspot camp. The Website Build reads only public ones. */
+export interface CampRow {
+  id: string;
+  registration_closed: boolean;
+  hide_spots_left: boolean;
 }
 
 export interface FaqTopicRow {
@@ -150,6 +185,7 @@ export interface Snapshot {
   website_categories_files: Link<"category_id", "file_id">[];
   website_programs: ProgramRow[];
   website_programs_files: Link<"program_id", "file_id">[];
+  website_programs_catalog_programs: Link<"website_program_id", "catalog_program_id">[];
   website_faq_topics: FaqTopicRow[];
   website_faqs: FaqRow[];
   website_profiles: ProfileRow[];
@@ -157,6 +193,10 @@ export interface Snapshot {
   website_policy_versions: PolicyVersionRow[];
   website_sponsor_levels: SponsorLevelRow[];
   website_sponsors: SponsorRow[];
+  programs: CatalogProgramRow[];
+  offerings: OfferingRow[];
+  registration_forms: RegistrationFormRow[];
+  clubspot_camps: CampRow[];
   files: FileRow[];
 }
 
@@ -173,6 +213,7 @@ export const collections = [
   "website_categories_files",
   "website_programs",
   "website_programs_files",
+  "website_programs_catalog_programs",
   "website_faq_topics",
   "website_faqs",
   "website_profiles",
@@ -180,6 +221,10 @@ export const collections = [
   "website_policy_versions",
   "website_sponsor_levels",
   "website_sponsors",
+  "programs",
+  "offerings",
+  "registration_forms",
+  "clubspot_camps",
 ] as const satisfies readonly Exclude<keyof Snapshot, "files">[];
 
 /** The name the pull saves a file under: its ID, with the extension it was uploaded with. */

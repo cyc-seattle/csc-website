@@ -1,7 +1,12 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
+  ages,
   buildContent,
+  categoryStatus,
+  datesSummary,
+  dayRange,
+  spotsLeft,
   currentVersion,
   dollars,
   faqTopics,
@@ -13,7 +18,7 @@ import {
 import { fileKind, referencedFiles, type Snapshot } from "../src/lib/snapshot.ts";
 
 const fixtures = JSON.parse(readFileSync("test/fixtures/content.json", "utf8")) as Snapshot;
-const content = buildContent(fixtures);
+const content = buildContent(fixtures, "2026-11-21");
 
 describe("currentVersion", () => {
   const policy: Policy = {
@@ -55,36 +60,152 @@ describe("programAction", () => {
     slug: "opti-race-team",
     title: "Opti Race Team",
     subtitle: "",
+    ages: "",
     summary: "",
     cardImage: undefined,
     banner: undefined,
     body: "",
-    registrationLabel: "Sign Up",
-    registrationUrl: "https://register.example.org/opti",
+    dates: [],
+    registration: "none",
     gallery: [],
   };
+  const open = {
+    form: "2027 Spring",
+    registerUrl: "https://theclubspot.com/register/camp/c1/class",
+    opensOn: undefined,
+    rows: [],
+  };
 
-  it("sends an open category's program to its sign-up page", () => {
-    expect(programAction(program, "open")).toEqual({ label: "Sign Up", href: "https://register.example.org/opti" });
-  });
-
-  it("says Register Now when the program has no label of its own", () => {
-    expect(programAction({ ...program, registrationLabel: "" }, "open").label).toBe("Register Now");
-  });
-
-  it("sends an open category's program with no sign-up page to its own page", () => {
-    expect(programAction({ ...program, registrationUrl: undefined }, "open")).toEqual({
-      label: "Learn More",
-      href: "/program/opti-race-team",
+  it("sends a program taking registrations to its Clubspot camp, whatever its category says", () => {
+    expect(programAction({ ...program, dates: [open], registration: "open" }, "closed")).toEqual({
+      label: "Register",
+      href: "https://theclubspot.com/register/camp/c1/class",
     });
   });
 
-  it("sends a program coming soon to the newsletter", () => {
-    expect(programAction(program, "coming_soon")).toEqual({ label: "Get Notified", href: "/newsletter" });
+  it("sends a program whose offerings aren't open yet to the newsletter", () => {
+    const coming = { ...program, dates: [{ ...open, registerUrl: undefined }], registration: "coming" as const };
+    expect(programAction(coming, "closed")).toEqual({ label: "Get Notified", href: "/newsletter" });
   });
 
-  it("sends a closed category's program to its own page", () => {
+  it("follows its category when nothing is coming up", () => {
+    expect(programAction(program, "coming_soon")).toEqual({ label: "Get Notified", href: "/newsletter" });
     expect(programAction(program, "closed")).toEqual({ label: "Learn More", href: "/program/opti-race-team" });
+    expect(programAction(program, "open")).toEqual({ label: "Learn More", href: "/program/opti-race-team" });
+  });
+});
+
+describe("what's on sale", () => {
+  const today = "2026-11-21";
+  const at = buildContent(fixtures, today);
+  const program = (slug: string) => at.programs.find((p) => p.slug === slug)!;
+
+  it("shows a page's offerings that aren't over, by form, with their price", () => {
+    const camp = program("learn-to-sail");
+    expect(camp.dates.map((g) => [g.form, g.rows.map((r) => [r.label, r.startsOn, r.priceCents])])).toEqual([
+      [
+        "2027 Summer Sailing Camps",
+        [
+          ["Week 1", "2027-06-21", 67500],
+          ["Week 2", "2027-06-28", 67500],
+        ],
+      ],
+    ]);
+  });
+
+  it("says when registration opens, before a form's camp takes it", () => {
+    const camp = program("learn-to-sail");
+    expect(camp.registration).toBe("coming");
+    expect(camp.dates[0]).toMatchObject({ registerUrl: undefined, opensOn: "2027-02-22" });
+  });
+
+  it("names each program on a page that covers several, and links to the camp taking registrations", () => {
+    const opti = program("opti-race-team");
+    expect(opti.registration).toBe("open");
+    expect(opti.ages).toBe("Ages 8–15");
+    expect(opti.dates).toEqual([
+      {
+        form: "2027 Spring Singlehanded Race Teams",
+        registerUrl: "https://theclubspot.com/register/camp/springOpti/class",
+        opensOn: undefined,
+        rows: [
+          {
+            label: "Opti Development Race Team",
+            startsOn: "2027-03-01",
+            endsOn: "2027-05-23",
+            priceCents: 67500,
+            spots: "1 spot left",
+          },
+          {
+            label: "Opti Race Team",
+            startsOn: "2027-03-01",
+            endsOn: "2027-05-23",
+            priceCents: 75000,
+            spots: "Full. Join the waitlist.",
+          },
+          {
+            label: "Opti Regional Race Team",
+            startsOn: "2027-03-01",
+            endsOn: "2027-05-23",
+            priceCents: 140000,
+            spots: "",
+          },
+        ],
+      },
+    ]);
+  });
+
+  it("has nothing for a page with no programs in the catalog", () => {
+    expect(program("laser-race-team")).toMatchObject({ dates: [], registration: "none", ages: "" });
+  });
+
+  it("opens a category when one of its programs takes registrations, and says when the rest open", () => {
+    const opened = at.categories.find((c) => c.programs.some((p) => p.slug === "opti-race-team"))!;
+    expect(opened.status).toBe("open");
+    expect(categoryStatus("closed", [program("learn-to-sail")])).toBe("coming_soon");
+    expect(categoryStatus("open", [])).toBe("open");
+  });
+});
+
+describe("ages", () => {
+  it("says the youngest and oldest, either alone, or nothing", () => {
+    expect(ages(6, 8)).toBe("Ages 6–8");
+    expect(ages(18, null)).toBe("Ages 18 and up");
+    expect(ages(null, 12)).toBe("Up to age 12");
+    expect(ages(10, 10)).toBe("Age 10");
+    expect(ages(null, null)).toBe("");
+  });
+});
+
+describe("spotsLeft", () => {
+  it("shows spots only when 5 or fewer are left, and full at none", () => {
+    expect(spotsLeft(12, 0, false)).toBe("");
+    expect(spotsLeft(12, 7, false)).toBe("5 spots left");
+    expect(spotsLeft(12, 11, false)).toBe("1 spot left");
+    expect(spotsLeft(12, 12, false)).toBe("Full. Join the waitlist.");
+    expect(spotsLeft(12, 13, false)).toBe("Full. Join the waitlist.");
+  });
+
+  it("shows nothing when Clubspot hides spots left, or there's no limit", () => {
+    expect(spotsLeft(12, 12, true)).toBe("");
+    expect(spotsLeft(null, 3, false)).toBe("");
+  });
+});
+
+describe("dayRange", () => {
+  it("writes a span as short as it can be read", () => {
+    expect(dayRange("2027-06-21", "2027-06-25")).toBe("Jun 21–25");
+    expect(dayRange("2027-06-28", "2027-07-02")).toBe("Jun 28 – Jul 2");
+    expect(dayRange("2026-12-01", "2027-02-28")).toBe("Dec 1, 2026 – Feb 28, 2027");
+    expect(dayRange("2027-06-21", null)).toBe("Jun 21, 2027");
+  });
+});
+
+describe("datesSummary", () => {
+  it("gives the first and last day, and the price, from the lowest when they differ", () => {
+    const at = buildContent(fixtures, "2026-11-21");
+    expect(datesSummary(at.programs.find((p) => p.slug === "learn-to-sail")!)).toBe("Jun 21 – Jul 2 · $675");
+    expect(datesSummary(at.programs.find((p) => p.slug === "opti-race-team")!)).toBe("Mar 1 – May 23 · from $675");
   });
 });
 

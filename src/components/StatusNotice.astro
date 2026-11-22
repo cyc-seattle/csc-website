@@ -1,20 +1,25 @@
 ---
-import type { Status } from "../lib/content.ts";
+import { longDay, type Status } from "../lib/content.ts";
 
 interface Props {
   status: Status;
+  /** When registration opens, as `YYYY-MM-DD`, if that's known. */
+  opensOn?: string | undefined;
 }
-const { status } = Astro.props;
+const { status, opensOn } = Astro.props;
 ---
 
 {status !== "open" && (
   <div class="mx-auto my-8 max-w-3xl rounded-xl border-l-4 border-signal bg-sand px-6 py-5">
     <h2 class="text-xl font-black text-navy">{status === "coming_soon" ? "Coming soon" : "On the horizon"}</h2>
     <p class="mt-1">
-      {status === "coming_soon"
-        ? "Registration for this program opens soon."
-        : "Registration for this program is closed for the season."}{" "}
-      Sign up for our newsletter to be the first to know when registration opens.
+      {status === "coming_soon" && opensOn
+        ? `Registration opens ${longDay(opensOn)}. Sign up for our newsletter, and we'll remind you.`
+        : `${
+            status === "coming_soon"
+              ? "Registration for this program opens soon."
+              : "Registration for this program is closed for the season."
+          } Sign up for our newsletter to be the first to know when registration opens.`}
     </p>
     <a class="button mt-4" href="/newsletter">
       Sign up for updates
