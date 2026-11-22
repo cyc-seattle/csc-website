@@ -11,7 +11,9 @@ import { fileKind, snapshotFilename, type Snapshot } from "./snapshot.ts";
 export * from "./model.ts";
 
 const snapshot = JSON.parse(readFileSync(".content/content.json", "utf8")) as Snapshot;
-const content = buildContent(snapshot);
+// Seattle's date, so a build just after midnight UTC still shows that evening's offerings.
+const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/Los_Angeles" });
+const content = buildContent(snapshot, today);
 
 export const { settings, pages, categories, programs, profiles, policies, sponsorLevels, sponsors } = content;
 

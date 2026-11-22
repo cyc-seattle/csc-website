@@ -17,7 +17,7 @@ const { category: c } = Astro.props as { category: Category };
 
 <Base title={c.title} description={c.summary} shareImage={c.image}>
   <Banner title={c.title} image={c.banner ?? c.image} />
-  <StatusNotice status={c.status} />
+  <StatusNotice status={c.status} opensOn={c.opensOn} />
   <section class="mx-auto max-w-4xl px-4 pt-6 text-center">
     <Markdown source={c.top} class="mx-auto text-center" />
   </section>

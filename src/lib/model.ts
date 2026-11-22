@@ -39,16 +39,45 @@ export interface Profile {
   groups: string[];
 }
 
+/** One offering on sale, as a program page lists it. */
+export interface DateRow {
+  /** The program's name on a page covering several programs, otherwise the offering's, such as Week 3. */
+  label: string;
+  startsOn: string | null;
+  endsOn: string | null;
+  priceCents: number | null;
+  /** Such as "3 spots left", shown only when few are left, or empty. */
+  spots: string;
+}
+
+/** A program's offerings on one registration form, such as 2027 Summer Sailing Camps. */
+export interface DateGroup {
+  form: string;
+  /** Its Clubspot camp's sign-up page, while the camp is public and takes registrations. */
+  registerUrl: string | undefined;
+  /** When registration opens, as `YYYY-MM-DD`, while it hasn't. */
+  opensOn: string | undefined;
+  rows: DateRow[];
+}
+
+/**
+ * Where a program's registration stands, from its offerings: open when a camp takes registrations, coming when
+ * offerings are on sale but none takes them yet, and none when nothing is coming up.
+ */
+export type Registration = "open" | "coming" | "none";
+
 export interface Program {
   slug: string;
   title: string;
   subtitle: string;
+  /** Such as "Ages 6–8", from the catalog programs the page covers, or empty. */
+  ages: string;
   summary: string;
   cardImage: Id | undefined;
   banner: Id | undefined;
   body: string;
-  registrationLabel: string;
-  registrationUrl: string | undefined;
+  dates: DateGroup[];
+  registration: Registration;
   gallery: Id[];
 }
 
@@ -56,7 +85,10 @@ export interface Category {
   slug: string;
   title: string;
   summary: string;
+  /** Staff's status, as its programs leave it (`categoryStatus`). */
   status: Status;
+  /** When its programs' registration opens, while none takes it yet. */
+  opensOn: string | undefined;
   image: Id | undefined;
   banner: Id | undefined;
   top: string;
@@ -177,14 +209,127 @@ export function currentVersion(policy: Policy, today: string): PolicyVersion | u
 }
 
 /**
- * Where a program's main button goes. An open category sends it to Clubspot, if the program has a sign-up page. A
- * category coming soon sends it to the newsletter. Otherwise it goes to the program's own page.
+ * Where a program's main button goes. A program taking registrations sends it to Clubspot, and one whose offerings
+ * aren't open yet to the newsletter. A program with nothing coming up follows its category: coming soon sends it to
+ * the newsletter, and otherwise it goes to the program's own page.
  */
 export function programAction(program: Program, status: Status): Action {
-  if (status === "open" && program.registrationUrl?.startsWith("http"))
-    return { label: program.registrationLabel || "Register Now", href: program.registrationUrl };
-  if (status === "coming_soon") return { label: "Get Notified", href: "/newsletter" };
+  const open = program.dates.find((group) => group.registerUrl !== undefined);
+  if (open?.registerUrl) return { label: "Register", href: open.registerUrl };
+  if (program.registration === "coming" || (program.registration === "none" && status === "coming_soon"))
+    return { label: "Get Notified", href: "/newsletter" };
   return { label: "Learn More", href: `/program/${program.slug}` };
+}
+
+/** A category's status, as its programs leave it: open when one takes registrations, coming soon when all wait. */
+export function categoryStatus(status: Status, programs: Program[]): Status {
+  if (programs.some((p) => p.registration === "open")) return "open";
+  if (programs.length > 0 && programs.every((p) => p.registration === "coming")) return "coming_soon";
+  return status;
+}
+
+/** "Ages 6–8", "Ages 18 and up", "Up to age 12", or empty, from the youngest and oldest a program takes. */
+export function ages(min: number | null, max: number | null): string {
+  if (min !== null && max !== null) return min === max ? `Age ${min}` : `Ages ${min}–${max}`;
+  if (min !== null) return `Ages ${min} and up`;
+  if (max !== null) return `Up to age ${max}`;
+  return "";
+}
+
+/** "3 spots left" at 5 or fewer, "Full. Join the waitlist." at none, and otherwise nothing, so a page doesn't go stale. */
+export function spotsLeft(capacity: number | null, confirmed: number, hidden: boolean): string {
+  if (hidden || capacity === null) return "";
+  const left = capacity - confirmed;
+  if (left <= 0) return "Full. Join the waitlist.";
+  if (left === 1) return "1 spot left";
+  return left <= 5 ? `${left} spots left` : "";
+}
+
+const clubspot = (campId: string) => `https://theclubspot.com/register/camp/${campId}/class`;
+
+/**
+ * The offerings a page covering `programIds` shows, not over by `today`, grouped by their registration form in the
+ * order they start, each row by the day it starts.
+ */
+export function programDates(
+  snapshot: Pick<Snapshot, "programs" | "offerings" | "registration_forms" | "clubspot_camps">,
+  programIds: Id[],
+  today: string,
+): DateGroup[] {
+  const several = programIds.length > 1;
+  const programName = new Map(snapshot.programs.map((p) => [p.id, p.name]));
+  const forms = new Map(snapshot.registration_forms.map((f) => [f.id, f]));
+  const camps = new Map(snapshot.clubspot_camps.map((c) => [c.id, c]));
+  const offerings = snapshot.offerings
+    .filter((o) => programIds.includes(o.program_id) && (o.ends_on === null || o.ends_on >= today))
+    .toSorted((a, b) => (a.starts_on ?? "").localeCompare(b.starts_on ?? ""));
+  const groups = new Map<string, DateGroup>();
+  for (const o of offerings) {
+    const form = o.registration_form_id ? forms.get(o.registration_form_id) : undefined;
+    if (form === undefined) continue;
+    const camp = form.clubspot_camp_id ? camps.get(form.clubspot_camp_id) : undefined;
+    let group = groups.get(form.id);
+    if (group === undefined) {
+      group = {
+        form: form.name,
+        registerUrl: camp && !camp.registration_closed ? clubspot(camp.id) : undefined,
+        opensOn: form.opens_on && form.opens_on > today ? form.opens_on : undefined,
+        rows: [],
+      };
+      groups.set(form.id, group);
+    }
+    group.rows.push({
+      label: (several ? programName.get(o.program_id) : o.name) ?? o.name ?? "",
+      startsOn: o.starts_on,
+      endsOn: o.ends_on,
+      priceCents: o.price_cents,
+      spots: camp ? spotsLeft(o.capacity, o.confirmed_count, camp.hide_spots_left) : "",
+    });
+  }
+  return [...groups.values()];
+}
+
+const shortDay = (date: string, withYear: boolean) =>
+  new Date(`${date}T00:00:00Z`).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    ...(withYear && { year: "numeric" }),
+    timeZone: "UTC",
+  });
+
+/** "Jun 21–25", "Jun 28 – Jul 2", or "Dec 1, 2026 – Feb 28, 2027" when it crosses a year. */
+export function dayRange(from: string | null, to: string | null): string {
+  if (from === null || to === null) return from ? shortDay(from, true) : to ? shortDay(to, true) : "";
+  if (from.slice(0, 4) !== to.slice(0, 4)) return `${shortDay(from, true)} – ${shortDay(to, true)}`;
+  if (from.slice(0, 7) === to.slice(0, 7)) return `${shortDay(from, false)}–${Number(to.slice(8))}`;
+  return `${shortDay(from, false)} – ${shortDay(to, false)}`;
+}
+
+/** "February 22, 2027". */
+export const longDay = (date: string) =>
+  new Date(`${date}T00:00:00Z`).toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+
+/** A card's line: the first and last day of what's coming, and the price, "from" the lowest when they differ. */
+export function datesSummary(program: Program): string {
+  const rows = program.dates.flatMap((g) => g.rows);
+  if (rows.length === 0) return "";
+  const starts = rows
+    .map((r) => r.startsOn)
+    .filter((d) => d !== null)
+    .sort();
+  const ends = rows
+    .map((r) => r.endsOn)
+    .filter((d) => d !== null)
+    .sort();
+  const prices = [...new Set(rows.map((r) => r.priceCents).filter((c) => c !== null))].sort((a, b) => a - b);
+  const span = dayRange(starts[0] ?? null, ends.at(-1) ?? null);
+  const price = prices.length === 0 ? "" : prices.length === 1 ? dollars(prices[0]!) : `from ${dollars(prices[0]!)}`;
+  return [span, price].filter(Boolean).join(" · ");
 }
 
 /** Whole dollars when it's even, such as $1,500, and cents only when there are some. */
@@ -208,7 +353,7 @@ export async function resolveFileReferences(html: string, url: (id: Id) => Promi
   return html.replace(fileReference, (_, attribute: string, id: string) => `${attribute}="${urls.get(id)}"`);
 }
 
-export function buildContent(snapshot: Snapshot): Content {
+export function buildContent(snapshot: Snapshot, today: string): Content {
   const s = snapshot.website_settings;
   const settings: Settings = {
     name: s.name,
@@ -238,45 +383,77 @@ export function buildContent(snapshot: Snapshot): Content {
   const profileById = new Map(profiles.map((p) => [p.id, p]));
 
   const programRows = snapshot.website_programs.filter((p) => p.status === "published").toSorted(bySort);
+  const catalog = new Map(snapshot.programs.map((p) => [p.id, p]));
   const programById = new Map(
-    programRows.map((p): [Id, Program] => [
-      p.id,
-      {
-        slug: p.slug,
-        title: p.title,
-        subtitle: p.subtitle ?? "",
-        summary: p.summary ?? "",
-        cardImage: p.card_image ?? undefined,
-        banner: p.banner ?? undefined,
-        body: p.body ?? "",
-        registrationLabel: p.registration_label ?? "",
-        registrationUrl: p.registration_url ?? undefined,
-        gallery: snapshot.website_programs_files
-          .filter((f) => f.program_id === p.id)
-          .toSorted(bySort)
-          .map((f) => f.file_id),
-      },
-    ]),
+    programRows.map((p): [Id, Program] => {
+      const covered = snapshot.website_programs_catalog_programs
+        .filter((l) => l.website_program_id === p.id)
+        .toSorted(bySort)
+        .map((l) => catalog.get(l.catalog_program_id))
+        .filter((c) => c !== undefined);
+      const mins = covered.map((c) => c.min_age).filter((a) => a !== null);
+      const maxes = covered.map((c) => c.max_age).filter((a) => a !== null);
+      const dates = programDates(
+        snapshot,
+        covered.map((c) => c.id),
+        today,
+      );
+      const registration: Registration = dates.some((g) => g.registerUrl)
+        ? "open"
+        : dates.length > 0
+          ? "coming"
+          : "none";
+      return [
+        p.id,
+        {
+          slug: p.slug,
+          title: p.title,
+          subtitle: p.subtitle ?? "",
+          ages: ages(mins.length > 0 ? Math.min(...mins) : null, maxes.length > 0 ? Math.max(...maxes) : null),
+          summary: p.summary ?? "",
+          cardImage: p.card_image ?? undefined,
+          banner: p.banner ?? undefined,
+          body: p.body ?? "",
+          dates,
+          registration,
+          gallery: snapshot.website_programs_files
+            .filter((f) => f.program_id === p.id)
+            .toSorted(bySort)
+            .map((f) => f.file_id),
+        },
+      ];
+    }),
   );
 
-  const categories = snapshot.website_categories.toSorted(bySort).map((c): Category => ({
-    slug: c.slug,
-    title: c.title,
-    summary: c.summary ?? "",
-    status: c.status,
-    image: c.image ?? undefined,
-    banner: c.banner ?? undefined,
-    top: c.top ?? "",
-    bottom: c.bottom ?? "",
-    testimonial: c.testimonial ?? "",
-    programs: linked(snapshot.website_categories_programs, "category_id", "program_id", c.id, programById),
-    faqTopics: linked(snapshot.website_categories_faq_topics, "category_id", "topic_id", c.id, topics),
-    profiles: linked(snapshot.website_categories_profiles, "category_id", "profile_id", c.id, profileById),
-    gallery: snapshot.website_categories_files
-      .filter((f) => f.category_id === c.id)
-      .toSorted(bySort)
-      .map((f) => f.file_id),
-  }));
+  const categories = snapshot.website_categories.toSorted(bySort).map((c): Category => {
+    const listed = linked(snapshot.website_categories_programs, "category_id", "program_id", c.id, programById);
+    const status = categoryStatus(c.status, listed);
+    return {
+      slug: c.slug,
+      title: c.title,
+      summary: c.summary ?? "",
+      status,
+      opensOn:
+        status === "coming_soon"
+          ? listed
+              .flatMap((p) => p.dates.map((g) => g.opensOn))
+              .filter(Boolean)
+              .sort()[0]
+          : undefined,
+      image: c.image ?? undefined,
+      banner: c.banner ?? undefined,
+      top: c.top ?? "",
+      bottom: c.bottom ?? "",
+      testimonial: c.testimonial ?? "",
+      programs: listed,
+      faqTopics: linked(snapshot.website_categories_faq_topics, "category_id", "topic_id", c.id, topics),
+      profiles: linked(snapshot.website_categories_profiles, "category_id", "profile_id", c.id, profileById),
+      gallery: snapshot.website_categories_files
+        .filter((f) => f.category_id === c.id)
+        .toSorted(bySort)
+        .map((f) => f.file_id),
+    };
+  });
 
   const pages = snapshot.website_pages.map((p): Page => ({
     slug: p.slug,

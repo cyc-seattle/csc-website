@@ -2,8 +2,9 @@
 // named by snapshotFilename.
 //
 // CONTENT_SOURCE=fixtures (the default) copies test/fixtures/. CONTENT_SOURCE=directus reads DIRECTUS_URL as the
-// Website Build user, with DIRECTUS_TOKEN. Its policy lets it read only the website_* collections and the Website
-// folder's files (cyc-seattle/platform#150).
+// Website Build user, with DIRECTUS_TOKEN. Its policy lets it read only the website_* collections, what's on sale from
+// the catalog (some fields of programs, offerings, registration forms and public Clubspot camps), and the Website
+// folder's files (cyc-seattle/platform#150, cyc-seattle/platform#332).
 
 import { createWriteStream } from "node:fs";
 import { cp, mkdir, readdir, rm, stat, writeFile } from "node:fs/promises";
