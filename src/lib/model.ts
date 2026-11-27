@@ -328,12 +328,14 @@ export function programDates(
   today: string,
 ): DateGroup[] {
   const several = programIds.length > 1;
-  const programName = new Map(snapshot.programs.map((p) => [p.id, p.name]));
+  // An offering belongs to a product, and a product is one program at most.
+  const programName = new Map(snapshot.programs.map((p) => [p.product_id, p.name]));
+  const productIds = snapshot.programs.filter((p) => programIds.includes(p.id)).map((p) => p.product_id);
   const forms = new Map(snapshot.registration_forms.map((f) => [f.id, f]));
   const camps = new Map(snapshot.clubspot_camps.map((c) => [c.id, c]));
   const offerings = snapshot.offerings
     // One with no end date, such as an old season Clubspot never dated, can't be shown as coming up.
-    .filter((o) => programIds.includes(o.program_id) && o.ends_on !== null && o.ends_on >= today)
+    .filter((o) => productIds.includes(o.product_id) && o.ends_on !== null && o.ends_on >= today)
     .toSorted((a, b) => (a.starts_on ?? "").localeCompare(b.starts_on ?? ""));
   const groups = new Map<string, DateGroup>();
   for (const o of offerings) {
@@ -351,7 +353,7 @@ export function programDates(
       groups.set(form.id, group);
     }
     group.rows.push({
-      label: (several ? programName.get(o.program_id) : o.name) ?? o.name ?? "",
+      label: (several ? programName.get(o.product_id) : o.name) ?? o.name ?? "",
       startsOn: o.starts_on,
       endsOn: o.ends_on,
       priceCents: o.price_cents,

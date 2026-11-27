@@ -74,15 +74,20 @@ export interface ProgramRow {
 /** A catalog program, as much of it as the Website Build reads. */
 export interface CatalogProgramRow {
   id: Id;
+  /** The product it's a program of, which its offerings belong to. */
+  product_id: Id;
   name: string;
   min_age: number | null;
   max_age: number | null;
 }
 
-/** What CSC sells: one program for one dated period. The Website Build reads only those not archived. */
+/**
+ * What CSC sells: one product for one dated period. The Website Build reads only those not archived, on a registration
+ * form that isn't archived.
+ */
 export interface OfferingRow {
   id: Id;
-  program_id: Id;
+  product_id: Id;
   name: string | null;
   registration_form_id: Id | null;
   starts_on: string | null;
