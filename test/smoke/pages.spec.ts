@@ -85,3 +85,23 @@ test("no page is wider than a phone", async ({ browser }) => {
   }
   await context.close();
 });
+
+test("every cell in a schedule is the same height, whatever it holds", async ({ browser }) => {
+  for (const viewport of [
+    { width: 1440, height: 900 },
+    { width: 390, height: 844 },
+  ]) {
+    const context = await browser.newContext({ viewport });
+    const page = await context.newPage();
+    await page.goto("/program-category/summer-camp");
+    // Each schedule's visible cells, by height: one height per schedule.
+    const heights = await page.evaluate(() =>
+      Array.from(document.querySelectorAll(".card"), (schedule) => {
+        const cells = Array.from(schedule.querySelectorAll(".schedule-cell"), (c) => c as HTMLElement);
+        return [...new Set(cells.filter((c) => c.offsetParent).map((c) => c.offsetHeight))];
+      }),
+    );
+    for (const h of heights.filter((h) => h.length > 0)) expect(h, `${viewport.width}px`).toHaveLength(1);
+    await context.close();
+  }
+});
