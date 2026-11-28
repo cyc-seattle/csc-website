@@ -10,6 +10,7 @@ import {
   spotsLeft,
   weekDays,
   weekPrice,
+  scheduleWeeks,
   weekSchedule,
   weeksByMonth,
   weekSpots,
@@ -67,6 +68,8 @@ describe("programAction", () => {
     title: "Opti Race Team",
     subtitle: "",
     ages: "",
+    minAge: null,
+    maxAge: null,
     summary: "",
     cardImage: undefined,
     banner: undefined,
@@ -218,6 +221,28 @@ describe("spotsLeft", () => {
   });
 });
 
+describe("program groups", () => {
+  const at = buildContent(fixtures, "2026-11-21");
+  const category = (slug: string) => at.categories.find((c) => c.slug === slug)!;
+
+  it("puts a category's programs in its sections, in order, with ages from their programs", () => {
+    expect(category("summer-camp").groups.map((g) => [g.title, g.ages, g.programs.map((p) => p.slug)])).toEqual([
+      ["Youth Sailing", "Ages 8–12", ["learn-to-sail"]],
+      ["Teen Sailing", "Ages 12–16", ["adventure-camp"]],
+    ]);
+  });
+
+  it("leaves programs in no section of this page in a last group with no title", () => {
+    expect(category("community-boating").groups.map((g) => [g.title, g.programs.map((p) => p.slug)])).toEqual([
+      ["", ["community-boating-membership"]],
+    ]);
+  });
+
+  it("works a group's ages out from its youngest and oldest programs", () => {
+    expect(category("junior-race-teams").groups[0]).toMatchObject({ title: "Singlehanded", ages: "Ages 8–15" });
+  });
+});
+
 describe("weekSchedule", () => {
   const at = buildContent(fixtures, "2026-11-21");
   const program = (slug: string) => at.programs.find((p) => p.slug === slug)!;
@@ -244,6 +269,13 @@ describe("weekSchedule", () => {
     expect(weekSchedule([program("opti-race-team")])).toBeUndefined();
     expect(weekSchedule([program("laser-race-team")])).toBeUndefined();
     expect(weekSchedule([program("learn-to-sail"), program("laser-race-team")])!.rows).toHaveLength(1);
+  });
+
+  it("gives a group the category's weeks, so every group on the page lines up", () => {
+    const weeks = scheduleWeeks([program("learn-to-sail"), program("adventure-camp")])!;
+    const teen = weekSchedule([program("adventure-camp")], weeks)!;
+    expect(teen.weeks).toHaveLength(3);
+    expect(teen.rows[0]!.cells.map((c) => c?.label)).toEqual([undefined, undefined, "Week 4"]);
   });
 
   it("groups weeks by the month they start in, and names their days", () => {

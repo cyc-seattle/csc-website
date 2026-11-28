@@ -69,6 +69,19 @@ export interface ProgramRow {
   card_image: Id | null;
   banner: Id | null;
   body: string | null;
+  /** The section it's in on its group's category page. It's in no section on any other category's page. */
+  group_id: Id | null;
+}
+
+/**
+ * A section of a category's page, such as Youth Sailing, holding the programs whose `group_id` names it. Its ages come
+ * from its programs, never from the group.
+ */
+export interface ProgramGroupRow {
+  id: Id;
+  title: string;
+  category_id: Id;
+  sort: number | null;
 }
 
 /** A catalog program, as much of it as the Website Build reads. */
@@ -217,6 +230,7 @@ export interface Snapshot {
   website_categories_faq_topics: Link<"category_id", "topic_id">[];
   website_categories_files: Link<"category_id", "file_id">[];
   website_programs: ProgramRow[];
+  website_program_groups: ProgramGroupRow[];
   website_programs_files: Link<"program_id", "file_id">[];
   website_programs_catalog_programs: Link<"website_program_id", "catalog_program_id">[];
   website_faq_topics: FaqTopicRow[];
@@ -249,6 +263,7 @@ export const collections = [
   "website_categories_faq_topics",
   "website_categories_files",
   "website_programs",
+  "website_program_groups",
   "website_programs_files",
   "website_programs_catalog_programs",
   "website_faq_topics",

@@ -81,6 +81,9 @@ export interface Program {
   subtitle: string;
   /** Such as "Ages 6–8", from the catalog programs the page covers, or empty. */
   ages: string;
+  /** The youngest and oldest the catalog programs it covers take, for its group's ages. */
+  minAge: number | null;
+  maxAge: number | null;
   summary: string;
   cardImage: Id | undefined;
   banner: Id | undefined;
@@ -104,9 +107,20 @@ export interface Category {
   bottom: string;
   testimonial: string;
   programs: Program[];
+  /** Its programs in their sections, in order. Programs in no section of this page are a last group with no title. */
+  groups: ProgramGroup[];
   faqTopics: FaqTopic[];
   profiles: Profile[];
   gallery: Id[];
+}
+
+/** A section of a category's page, such as Youth Sailing, with its programs. */
+export interface ProgramGroup {
+  /** Empty for the programs in no section. */
+  title: string;
+  /** Such as "Ages 8–12", from its programs' ages, never from the group itself. */
+  ages: string;
+  programs: Program[];
 }
 
 export interface Section {
@@ -430,28 +444,31 @@ export interface WeekSchedule {
 
 const days = (from: string, to: string) => (Date.parse(to) - Date.parse(from)) / 86_400_000;
 
+/** The weeks every dated offering of the programs runs in, when each is a week or less; none otherwise. */
+export function scheduleWeeks(programs: Program[]): Week[] | undefined {
+  const all = programs.flatMap((p) => p.dates.flatMap((g) => g.rows)).filter((r) => r.startsOn && r.endsOn);
+  if (all.length === 0 || all.some((r) => days(r.startsOn!, r.endsOn!) > 6)) return undefined;
+  return [...new Map(all.map((r) => [r.startsOn!, { startsOn: r.startsOn!, endsOn: r.endsOn! }])).values()].sort(
+    (a, b) => a.startsOn.localeCompare(b.startsOn),
+  );
+}
+
 /**
  * The programs' offerings by week, when every dated offering is a week or less, as summer camps are. A program with
  * no offerings has no row. There's none for programs that sell longer offerings, such as a race team's season.
+ * `weeks` gives every group on a category's page the same columns, the category's weeks.
  */
-export function weekSchedule(programs: Program[]): WeekSchedule | undefined {
-  const dated = programs.map((program) => ({
+export function weekSchedule(programs: Program[], weeks = scheduleWeeks(programs)): WeekSchedule | undefined {
+  if (weeks === undefined || scheduleWeeks(programs) === undefined) return undefined;
+  const rows = programs.map((program) => ({
     program,
     rows: program.dates.flatMap((g) => g.rows).filter((r) => r.startsOn !== null && r.endsOn !== null),
   }));
-  const all = dated.flatMap((d) => d.rows);
-  if (all.length === 0 || all.some((r) => days(r.startsOn!, r.endsOn!) > 6)) return undefined;
-  const weeks = [...new Map(all.map((r) => [r.startsOn!, { startsOn: r.startsOn!, endsOn: r.endsOn! }])).values()].sort(
-    (a, b) => a.startsOn.localeCompare(b.startsOn),
-  );
   return {
     weeks,
-    rows: dated
+    rows: rows
       .filter((d) => d.rows.length > 0)
-      .map(({ program, rows }) => ({
-        program,
-        cells: weeks.map((w) => rows.find((r) => r.startsOn === w.startsOn)),
-      })),
+      .map(({ program, rows }) => ({ program, cells: weeks.map((w) => rows.find((r) => r.startsOn === w.startsOn)) })),
   };
 }
 
@@ -490,6 +507,13 @@ export function weekPrice(program: Program): string {
   ].sort((a, b) => a - b);
   if (prices.length === 0) return "";
   return `${prices.length > 1 ? "from " : ""}${dollars(prices[0]!)} a week`;
+}
+
+/** A group's ages: from its youngest program's youngest to its oldest program's oldest. */
+export function groupAges(programs: Program[]): string {
+  const mins = programs.map((p) => p.minAge).filter((a) => a !== null);
+  const maxes = programs.map((p) => p.maxAge).filter((a) => a !== null);
+  return ages(mins.length > 0 ? Math.min(...mins) : null, maxes.length > 0 ? Math.max(...maxes) : null);
 }
 
 /** Whole dollars when it's even, such as $1,500, and cents only when there are some. */
@@ -546,6 +570,8 @@ export function buildContent(snapshot: Snapshot, today: string): Content {
         .filter((c) => c !== undefined);
       const mins = covered.map((c) => c.min_age).filter((a) => a !== null);
       const maxes = covered.map((c) => c.max_age).filter((a) => a !== null);
+      const minAge = mins.length > 0 ? Math.min(...mins) : null;
+      const maxAge = maxes.length > 0 ? Math.max(...maxes) : null;
       const dates = programDates(
         snapshot,
         covered.map((c) => c.id),
@@ -562,7 +588,9 @@ export function buildContent(snapshot: Snapshot, today: string): Content {
           slug: p.slug,
           title: p.title,
           subtitle: p.subtitle ?? "",
-          ages: ages(mins.length > 0 ? Math.min(...mins) : null, maxes.length > 0 ? Math.max(...maxes) : null),
+          ages: ages(minAge, maxAge),
+          minAge,
+          maxAge,
           summary: p.summary ?? "",
           cardImage: p.card_image ?? undefined,
           banner: p.banner ?? undefined,
@@ -578,8 +606,16 @@ export function buildContent(snapshot: Snapshot, today: string): Content {
     }),
   );
 
+  const groupOf = new Map(programRows.map((p) => [programById.get(p.id)!, p.group_id]));
   const categories = snapshot.website_categories.toSorted(bySort).map((c): Category => {
     const listed = linked(snapshot.website_categories_programs, "category_id", "program_id", c.id, programById);
+    const sections = snapshot.website_program_groups.filter((g) => g.category_id === c.id).toSorted(bySort);
+    const groups = [
+      ...sections.map((g) => ({ title: g.title, programs: listed.filter((p) => groupOf.get(p) === g.id) })),
+      { title: "", programs: listed.filter((p) => !sections.some((g) => g.id === groupOf.get(p))) },
+    ]
+      .filter((g) => g.programs.length > 0)
+      .map((g): ProgramGroup => ({ ...g, ages: groupAges(g.programs) }));
     const status = categoryStatus(c.status, listed);
     return {
       slug: c.slug,
@@ -599,6 +635,7 @@ export function buildContent(snapshot: Snapshot, today: string): Content {
       bottom: c.bottom ?? "",
       testimonial: c.testimonial ?? "",
       programs: listed,
+      groups,
       faqTopics: linked(snapshot.website_categories_faq_topics, "category_id", "topic_id", c.id, topics),
       profiles: (c.crew_section_id && listById.get(c.crew_section_id)?.profiles) || [],
       gallery: snapshot.website_categories_files
