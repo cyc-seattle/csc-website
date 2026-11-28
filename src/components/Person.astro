@@ -1,0 +1,45 @@
+---
+// One crew member, the same card everywhere: a square photo, their name and title, and their bio, shown in full on
+// Our Crew and folded on a category page.
+import Img from "./Img.astro";
+import Markdown from "./Markdown.astro";
+import type { Profile } from "../lib/content.ts";
+
+interface Props {
+  person: Profile;
+  /** Folds the bio away, for a category page's Meet Our Crew. */
+  folded?: boolean;
+}
+const { person: p, folded = false } = Astro.props;
+const first = p.name.split(" ")[0];
+---
+
+<article class="card">
+  {p.photo ? (
+    <Img
+      id={p.photo}
+      alt={p.name}
+      widths={[300, 600]}
+      sizes="(min-width: 1024px) 25vw, 50vw"
+      class="aspect-square w-full object-cover"
+    />
+  ) : (
+    // No photo yet: the square keeps a row of cards even.
+    <div class="grid aspect-square w-full place-items-center bg-sea text-5xl font-black text-navy" aria-hidden="true">
+      {p.name.charAt(0)}
+    </div>
+  )}
+  <div class:list={["p-4", folded && "p-3"]}>
+    <h3 class:list={["font-black text-navy", folded ? "text-[15px]" : "text-base"]}>{p.name}</h3>
+    <p class:list={["font-bold uppercase tracking-wider text-signal", folded ? "text-[11px]" : "text-xs"]}>{p.title}</p>
+    {p.bio &&
+      (folded ? (
+        <details class="mt-2 text-sm text-slate-600">
+          <summary class="cursor-pointer text-[13px] text-navy underline">About {first}</summary>
+          <Markdown source={p.bio} class="mt-2 prose-sm" />
+        </details>
+      ) : (
+        <Markdown source={p.bio} class="mt-2 prose-sm text-slate-600" />
+      ))}
+  </div>
+</article>

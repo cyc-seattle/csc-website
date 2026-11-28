@@ -2,7 +2,7 @@
 import Base from "../../layouts/Base.astro";
 import Banner from "../../components/Banner.astro";
 import Markdown from "../../components/Markdown.astro";
-import StatusNotice from "../../components/StatusNotice.astro";
+import Notice from "../../components/Notice.astro";
 import Gallery from "../../components/Gallery.astro";
 import Img from "../../components/Img.astro";
 import ProgramDates from "../../components/ProgramDates.astro";
@@ -25,6 +25,7 @@ const ages = p.ages || p.subtitle;
 
 <Base title={p.title} description={p.summary} shareImage={p.cardImage}>
   <Banner title={p.title} image={p.banner ?? p.cardImage} />
+  <Notice status={status} opensOn={opensOn} />
   <div class="mx-auto max-w-4xl px-4">
     {category && (
       <nav class="pt-6 text-sm" aria-label="Breadcrumb">
@@ -41,7 +42,6 @@ const ages = p.ages || p.subtitle;
         </a>
       )}
     </div>
-    <StatusNotice status={status} opensOn={opensOn} />
     <ProgramDates groups={p.dates} />
     {p.body ? (
       <Markdown source={p.body} />

@@ -6,6 +6,8 @@ const pages = [
   ["category", "/program-category/summer-camp"],
   ["program", "/program/opti-race-team"],
   ["crew", "/our-crew"],
+  ["donate", "/donate"],
+  ["contact", "/contact-us"],
   ["sponsorships", "/sponsorships"],
   ["policy", "/policy/cancellation-policy"],
 ] as const;

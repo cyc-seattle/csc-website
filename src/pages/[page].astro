@@ -5,6 +5,7 @@ import Base from "../layouts/Base.astro";
 import Banner from "../components/Banner.astro";
 import Markdown from "../components/Markdown.astro";
 import Img from "../components/Img.astro";
+import Card from "../components/Card.astro";
 import Faqs from "../components/Faqs.astro";
 import SectionHeading from "../components/SectionHeading.astro";
 import Profiles from "../components/Profiles.astro";
@@ -140,23 +141,14 @@ const { page: p } = Astro.props as { page: Page };
     {p.sections.length > 0 && (
       <div class="mt-4 grid gap-8 md:grid-cols-3">
         {p.sections.map((s) => (
-          <article class="card">
-            <Img
-              id={s.image}
-              widths={[400, 800]}
-              sizes="(min-width: 768px) 33vw, 100vw"
-              class="aspect-[4/3] w-full object-cover"
-            />
-            <div class="p-6">
-              <h2 class="text-xl font-black text-navy">{s.title}</h2>
-              <Markdown source={s.body} class="mt-2 prose-sm" />
-              {s.action && (
-                <a class="button mt-4" href={s.action.href}>
-                  {s.action.label}
-                </a>
-              )}
-            </div>
-          </article>
+          <Card title={s.title} image={s.image} heading="h2" sizes="(min-width: 768px) 33vw, 100vw">
+            <Markdown source={s.body} class="prose-sm flex-1" />
+            {s.action && (
+              <a class="button self-start" href={s.action.href}>
+                {s.action.label}
+              </a>
+            )}
+          </Card>
         ))}
       </div>
     )}

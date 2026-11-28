@@ -1,0 +1,52 @@
+---
+// The one card: a picture on top, then its title (a link when the card has a page), a red line such as ages, and
+// whatever the page puts in it. Programs, categories on Home and a page's sections all use it.
+import Img from "./Img.astro";
+
+interface Props {
+  title: string;
+  image: string | undefined;
+  /** Where the title goes, such as the program's page. */
+  href?: string | undefined;
+  /** A small outlined label above the title, such as "Registration open". */
+  tag?: string | undefined;
+  /** The red line under the title, such as "Ages 8–12". */
+  kicker?: string | undefined;
+  sizes?: string;
+  /** The title's level, so a page's headings stay in order: h2 where the cards are the page's first sections. */
+  heading?: "h2" | "h3";
+}
+const {
+  title,
+  image,
+  href,
+  tag,
+  kicker,
+  sizes = "(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw",
+  heading: Heading = "h3",
+} = Astro.props;
+---
+
+<article class="card flex w-full flex-col">
+  {image && <Img id={image} alt="" widths={[480, 800]} sizes={sizes} class="aspect-[16/10] w-full object-cover" />}
+  <div class="flex flex-1 flex-col gap-1.5 p-5">
+    {tag && (
+      <span class="self-start rounded border border-signal px-2 py-0.5 text-[11px] font-black uppercase tracking-wider text-signal">
+        {tag}
+      </span>
+    )}
+    <Heading class="text-xl font-black text-navy">
+      {href ? (
+        <a href={href} class="hover:underline">
+          {title}
+        </a>
+      ) : (
+        title
+      )}
+    </Heading>
+    {kicker && <p class="text-xs font-bold uppercase tracking-wider text-signal">{kicker}</p>}
+    <div class="flex flex-1 flex-col gap-3 text-slate-600">
+      <slot />
+    </div>
+  </div>
+</article>
