@@ -38,6 +38,28 @@
   .button-quiet {
     @apply inline-flex items-center justify-center rounded-card border border-navy bg-white px-5 py-2 font-bold text-navy transition hover:bg-navy hover:text-white;
   }
+  /* Schedules (cyc-seattle/csc-website#18): rounded cells with even 4px gaps; a missing week is one stripe style. */
+  .schedule-title {
+    @apply mb-2 text-[13px] font-black uppercase tracking-widest text-navy;
+  }
+  /* Every cell is the same height whatever it holds, "3 left", "Full", or stripes; a row's cells stretch together. */
+  .schedule-cell {
+    @apply flex h-full min-h-10 items-center justify-center rounded px-1 py-1.5 text-center text-xs font-bold leading-tight;
+  }
+  /* A phone card's week tile also shows its days, on a line of its own. */
+  .schedule-cell-tile {
+    @apply min-h-12 flex-col;
+  }
+  .schedule-cell-on {
+    @apply bg-navy text-white;
+  }
+  .schedule-cell-full {
+    @apply bg-[#e6e9f0] text-signal;
+  }
+  .schedule-cell-off {
+    @apply border border-line;
+    background: repeating-linear-gradient(135deg, #eef1f5 0 6px, #fff 6px 12px);
+  }
   .prose table {
     @apply text-sm;
   }
