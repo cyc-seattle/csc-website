@@ -11,6 +11,11 @@
   --color-signal: #d42a2f;
   --color-sea: #e8f1f5;
   --color-sand: #f6f4ef;
+  /* The page's pale blue-gray, which white cards lift off (cyc-seattle/csc-website#18). */
+  --color-tint: #f1f5f8;
+  --color-line: #e3e8ee;
+  --radius-card: 6px;
+  --shadow-card: 0 1px 2px rgb(23 28 64 / 0.06), 0 4px 12px rgb(23 28 64 / 0.07);
 }
 
 @layer base {
@@ -23,11 +28,15 @@
 }
 
 @layer components {
+  /* Every card, list box and form on the site is this one card. */
+  .card {
+    @apply overflow-hidden rounded-card border border-line bg-white shadow-card;
+  }
   .button {
-    @apply inline-flex items-center justify-center rounded-full bg-signal px-6 py-2.5 font-bold text-white shadow-sm transition hover:bg-red-700;
+    @apply inline-flex items-center justify-center rounded-card bg-signal px-5 py-2 font-bold text-white transition hover:bg-red-700;
   }
   .button-quiet {
-    @apply inline-flex items-center justify-center rounded-full border-2 border-navy px-6 py-2 font-bold text-navy transition hover:bg-navy hover:text-white;
+    @apply inline-flex items-center justify-center rounded-card border border-navy bg-white px-5 py-2 font-bold text-navy transition hover:bg-navy hover:text-white;
   }
   .prose table {
     @apply text-sm;
@@ -37,6 +46,6 @@
     @apply border border-slate-200 px-2 py-1 text-center;
   }
   .prose video {
-    @apply w-full rounded-lg;
+    @apply w-full rounded-card;
   }
 }

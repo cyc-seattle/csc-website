@@ -6,6 +6,7 @@ import Banner from "../components/Banner.astro";
 import Markdown from "../components/Markdown.astro";
 import Img from "../components/Img.astro";
 import Faqs from "../components/Faqs.astro";
+import SectionHeading from "../components/SectionHeading.astro";
 import Profiles from "../components/Profiles.astro";
 import Honeypot from "../components/Honeypot.astro";
 import { pages, crewLists, sponsorLevels, sponsors, categories, dollars, type Page } from "../lib/content.ts";
@@ -31,20 +32,16 @@ const { page: p } = Astro.props as { page: Page };
           </a>
         )}
       </div>
-      {p.image && <Img id={p.image} class="w-full rounded-2xl shadow-md" />}
+      {p.image && <Img id={p.image} class="w-full rounded-card shadow-card" />}
     </div>
 
     {p.slug === "contact-us" && (
-      <form
-        class="mt-10 grid max-w-2xl gap-4 rounded-2xl bg-sand p-6 sm:grid-cols-2"
-        method="post"
-        action={contactAction}
-      >
+      <form class="card mt-10 grid max-w-2xl gap-4 p-6 sm:grid-cols-2" method="post" action={contactAction}>
         <Honeypot name="website" />
         <label class="grid gap-1 text-sm font-bold text-navy">
           First name
           <input
-            class="rounded-lg border border-slate-300 px-3 py-2 font-normal"
+            class="rounded-card border border-slate-300 px-3 py-2 font-normal"
             name="first_name"
             autocomplete="given-name"
           />
@@ -52,7 +49,7 @@ const { page: p } = Astro.props as { page: Page };
         <label class="grid gap-1 text-sm font-bold text-navy">
           Last name
           <input
-            class="rounded-lg border border-slate-300 px-3 py-2 font-normal"
+            class="rounded-card border border-slate-300 px-3 py-2 font-normal"
             name="last_name"
             autocomplete="family-name"
           />
@@ -60,7 +57,7 @@ const { page: p } = Astro.props as { page: Page };
         <label class="grid gap-1 text-sm font-bold text-navy">
           Email
           <input
-            class="rounded-lg border border-slate-300 px-3 py-2 font-normal"
+            class="rounded-card border border-slate-300 px-3 py-2 font-normal"
             type="email"
             name="email"
             required
@@ -70,7 +67,7 @@ const { page: p } = Astro.props as { page: Page };
         <label class="grid gap-1 text-sm font-bold text-navy">
           Phone
           <input
-            class="rounded-lg border border-slate-300 px-3 py-2 font-normal"
+            class="rounded-card border border-slate-300 px-3 py-2 font-normal"
             type="tel"
             name="phone"
             autocomplete="tel"
@@ -79,7 +76,7 @@ const { page: p } = Astro.props as { page: Page };
         <label class="grid gap-1 text-sm font-bold text-navy sm:col-span-2">
           Message
           <textarea
-            class="min-h-32 rounded-lg border border-slate-300 px-3 py-2 font-normal"
+            class="min-h-32 rounded-card border border-slate-300 px-3 py-2 font-normal"
             name="message"
             required
           ></textarea>
@@ -94,7 +91,7 @@ const { page: p } = Astro.props as { page: Page };
       <>
         <form
           id="newsletter"
-          class="mt-10 grid max-w-2xl gap-4 rounded-2xl bg-sand p-6 sm:grid-cols-2"
+          class="card mt-10 grid max-w-2xl gap-4 p-6 sm:grid-cols-2"
           method="post"
           action={subscribeAction}
         >
@@ -106,7 +103,7 @@ const { page: p } = Astro.props as { page: Page };
           <label class="grid gap-1 text-sm font-bold text-navy">
             First name
             <input
-              class="rounded-lg border border-slate-300 px-3 py-2 font-normal"
+              class="rounded-card border border-slate-300 px-3 py-2 font-normal"
               name="first_name"
               autocomplete="given-name"
             />
@@ -114,7 +111,7 @@ const { page: p } = Astro.props as { page: Page };
           <label class="grid gap-1 text-sm font-bold text-navy">
             Last name
             <input
-              class="rounded-lg border border-slate-300 px-3 py-2 font-normal"
+              class="rounded-card border border-slate-300 px-3 py-2 font-normal"
               name="last_name"
               autocomplete="family-name"
             />
@@ -122,7 +119,7 @@ const { page: p } = Astro.props as { page: Page };
           <label class="grid gap-1 text-sm font-bold text-navy sm:col-span-2">
             Email
             <input
-              class="rounded-lg border border-slate-300 px-3 py-2 font-normal"
+              class="rounded-card border border-slate-300 px-3 py-2 font-normal"
               type="email"
               name="email"
               required
@@ -143,7 +140,7 @@ const { page: p } = Astro.props as { page: Page };
     {p.sections.length > 0 && (
       <div class="mt-4 grid gap-8 md:grid-cols-3">
         {p.sections.map((s) => (
-          <article class="overflow-hidden rounded-2xl bg-white shadow-md ring-1 ring-slate-100">
+          <article class="card">
             <Img
               id={s.image}
               widths={[400, 800]}
@@ -166,17 +163,17 @@ const { page: p } = Astro.props as { page: Page };
 
     {p.slug === "sponsorships" && (
       <>
-        <h2 class="mt-14 text-center text-3xl font-black text-navy">Sponsorship Levels</h2>
+        <SectionHeading class="mt-14">Sponsorship Levels</SectionHeading>
         <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {sponsorLevels.map((l) => (
-            <article class="rounded-2xl border-t-4 border-signal bg-sand p-6">
+            <article class="card border-t-4 border-t-signal p-6">
               <h3 class="text-xl font-black text-navy">{l.name}</h3>
               <p class="text-2xl font-black text-signal">{dollars(l.amountCents)}</p>
               <Markdown source={l.benefits} class="mt-2 prose-sm text-slate-600" />
             </article>
           ))}
         </div>
-        <h2 class="mt-14 text-center text-3xl font-black text-navy">Thanks to Our Sponsors</h2>
+        <SectionHeading class="mt-14">Thanks to Our Sponsors</SectionHeading>
         <div class="mt-6 flex flex-wrap items-center justify-center gap-10">
           {sponsors.map((s) => (
             <a href={s.url} class="block" title={s.level ? `${s.name} (${s.level})` : s.name}>

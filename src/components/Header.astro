@@ -1,0 +1,95 @@
+---
+import Img from "./Img.astro";
+import { settings } from "../lib/content.ts";
+
+const path = Astro.url.pathname;
+---
+
+<header class="sticky top-0 z-40 border-b border-line bg-white shadow-[0_2px_8px_rgb(23_28_64/0.07)]">
+  <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-1.5 lg:py-1">
+    <a href="/" aria-label={`${settings.name} home`}>
+      <Img
+        id={settings.logo}
+        alt={settings.name}
+        widths={[260, 520]}
+        sizes="260px"
+        loading="eager"
+        class="h-[50px] w-auto lg:h-[66px]"
+      />
+    </a>
+    <nav class="hidden lg:block" aria-label="Main">
+      <ul class="flex items-center">
+        {settings.menu.map((group) => (
+          <li class="group relative">
+            <button
+              type="button"
+              class:list={[
+                "px-3.5 py-2 font-bold text-navy hover:text-signal",
+                group.items.some((i) => i.href === path) && "text-signal",
+              ]}
+              aria-haspopup="true"
+            >
+              {group.label}
+            </button>
+            <ul class="card invisible absolute right-0 top-full w-60 p-2 opacity-0 transition group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
+              {group.items.map((item) => (
+                <li>
+                  <a
+                    class="block rounded-card px-3 py-2 text-navy hover:bg-sea"
+                    href={item.href}
+                    aria-current={item.href === path ? "page" : undefined}
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </li>
+        ))}
+        <li class="ml-3">
+          <a class="button" href="/contact-us">
+            Contact Us
+          </a>
+        </li>
+      </ul>
+    </nav>
+    <div class="flex items-center gap-2 lg:hidden">
+      <a class="button px-3 py-1.5 text-sm" href="/contact-us">
+        Contact Us
+      </a>
+      <!-- No JavaScript: <details> opens the phone menu on its own. -->
+      <details class="group relative">
+        <summary
+          class="flex cursor-pointer list-none items-center p-1.5 [&::-webkit-details-marker]:hidden"
+          aria-label="Menu"
+        >
+          <span class="relative block h-5 w-[26px]" aria-hidden="true">
+            <span class="absolute inset-x-0 top-0 h-[3px] rounded-sm bg-navy transition group-open:top-2 group-open:rotate-45"></span>
+            <span class="absolute inset-x-0 top-2 h-[3px] rounded-sm bg-navy transition group-open:opacity-0"></span>
+            <span class="absolute inset-x-0 top-4 h-[3px] rounded-sm bg-navy transition group-open:top-2 group-open:-rotate-45"></span>
+          </span>
+        </summary>
+        <nav class="card absolute right-0 mt-2 w-72 p-4" aria-label="Main">
+          {settings.menu.map((group) => (
+            <div class="mb-3 last:mb-0">
+              <p class="text-xs font-bold uppercase tracking-wider text-signal">{group.label}</p>
+              <ul>
+                {group.items.map((item) => (
+                  <li>
+                    <a
+                      class="block py-1 font-bold text-navy hover:underline"
+                      href={item.href}
+                      aria-current={item.href === path ? "page" : undefined}
+                    >
+                      {item.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </nav>
+      </details>
+    </div>
+  </div>
+</header>
