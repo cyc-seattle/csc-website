@@ -48,7 +48,7 @@ const ages = p.ages || p.subtitle;
     ) : (
       <div class="grid items-start gap-8 md:grid-cols-2">
         <p class="text-lg leading-relaxed">{p.summary}</p>
-        <Img id={p.cardImage} alt={p.title} class="w-full rounded-2xl shadow-md" />
+        <Img id={p.cardImage} alt={p.title} class="w-full rounded-card shadow-card" />
       </div>
     )}
     {register && (

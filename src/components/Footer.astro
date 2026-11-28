@@ -1,0 +1,57 @@
+---
+import Img from "./Img.astro";
+import { settings, policies } from "../lib/content.ts";
+
+const footerPolicies = policies.filter((p) => p.inFooter);
+---
+
+<footer class="mt-16 bg-navy-dark text-slate-200">
+  <div class="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:grid-cols-3">
+    <div class="flex flex-col items-start gap-4">
+      <Img id={settings.badge} alt="" widths={[120, 240]} sizes="120px" class="h-28 w-auto rounded-full bg-white p-2" />
+      <div class="flex gap-4">
+        {settings.social.map((s) => (
+          <a class="font-bold text-white hover:underline" href={s.url}>
+            {s.label}
+          </a>
+        ))}
+      </div>
+    </div>
+    <div>
+      <h2 class="mb-3 text-[13px] font-black uppercase tracking-widest text-white">
+        <a href="/contact-us" class="hover:underline">
+          Contact Us
+        </a>
+      </h2>
+      <address class="space-y-1 text-sm not-italic">
+        <a class="block hover:underline" href={`mailto:${settings.email}`}>
+          {settings.email}
+        </a>
+        <a class="block hover:underline" href={settings.mapUrl}>
+          {settings.address.map((line) => (
+            <span class="block">{line}</span>
+          ))}
+        </a>
+        <a class="block hover:underline" href={`tel:+1-${settings.phone}`}>
+          {settings.phone}
+        </a>
+        <span class="block">EIN: {settings.ein}</span>
+      </address>
+    </div>
+    <div>
+      <h2 class="mb-3 text-[13px] font-black uppercase tracking-widest text-white">Policies</h2>
+      <ul class="space-y-1 text-sm">
+        {footerPolicies.map((p) => (
+          <li>
+            <a class="hover:underline" href={`/policy/${p.slug}`}>
+              {p.title}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+  <p class="pb-6 text-center text-xs text-slate-400">
+    © {new Date().getFullYear()} {settings.name}, a 501(c)(3) nonprofit.
+  </p>
+</footer>

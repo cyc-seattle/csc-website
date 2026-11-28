@@ -68,7 +68,20 @@ test("the phone menu opens without JavaScript", async ({ browser }) => {
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, javaScriptEnabled: false });
   const page = await context.newPage();
   await page.goto("/");
-  await page.getByText("Menu", { exact: true }).click();
-  await expect(page.getByRole("link", { name: "Contact Us" }).first()).toBeVisible();
+  // Contact Us sits in the phone header already, so check one of the menu's own links instead.
+  const firstItem = page.locator("details nav a").first();
+  await expect(firstItem).toBeHidden();
+  await page.getByLabel("Menu", { exact: true }).click();
+  await expect(firstItem).toBeVisible();
+  await context.close();
+});
+
+test("no page is wider than a phone", async ({ browser }) => {
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const page = await context.newPage();
+  for (const path of await sitemapPaths(page)) {
+    await page.goto(path);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth), path).toBeLessThanOrEqual(390);
+  }
   await context.close();
 });

@@ -1,6 +1,7 @@
 ---
 import Img from "./Img.astro";
 import Markdown from "./Markdown.astro";
+import SectionHeading from "./SectionHeading.astro";
 import type { Profile } from "../lib/content.ts";
 
 interface Props {
@@ -14,7 +15,7 @@ const { title, items, compact = false } = Astro.props;
 
 {items.length > 0 && (
   <section class="mx-auto max-w-6xl px-4 py-10">
-    <h2 class="mb-6 text-center text-3xl font-black text-navy">{title}</h2>
+    <SectionHeading>{title}</SectionHeading>
     {compact ? (
       <div class="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-5">
         {items.map((p) => (
@@ -40,7 +41,7 @@ const { title, items, compact = false } = Astro.props;
     ) : (
       <div class="grid items-start gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {items.map((p) => (
-          <article class="overflow-hidden rounded-xl bg-white shadow-md ring-1 ring-slate-100">
+          <article class="card">
             <Img
               id={p.photo}
               alt={p.name}
