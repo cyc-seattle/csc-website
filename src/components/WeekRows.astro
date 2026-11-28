@@ -1,0 +1,31 @@
+---
+// One camp's weeks inside its card, on a phone: a row for each month, with a tile for each week.
+import ScheduleCell from "./ScheduleCell.astro";
+import { weekDays, weeksByMonth, type DateRow, type Week } from "../lib/content.ts";
+
+interface Props {
+  weeks: Week[];
+  cells: (DateRow | undefined)[];
+}
+const { weeks, cells } = Astro.props;
+const months = weeksByMonth(weeks);
+const columns = Math.max(...months.map((m) => m.weeks.length));
+const cell = (w: Week) => cells[weeks.indexOf(w)];
+---
+
+<div
+  class="grid gap-1 text-[11px] [&_.schedule-cell]:text-[11px]"
+  style={`grid-template-columns: 2.5rem repeat(${columns}, minmax(0, 1fr))`}
+>
+  {months.map((m) => (
+    <>
+      <span class="self-center text-[11px] font-black uppercase tracking-wide text-navy">{m.month.slice(0, 3)}</span>
+      {m.weeks.map((w) => (
+        <ScheduleCell row={cell(w)} days={weekDays(w)} />
+      ))}
+      {Array.from({ length: columns - m.weeks.length }, () => (
+        <span />
+      ))}
+    </>
+  ))}
+</div>

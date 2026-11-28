@@ -2,12 +2,12 @@
 import Base from "../../layouts/Base.astro";
 import Banner from "../../components/Banner.astro";
 import Markdown from "../../components/Markdown.astro";
-import Card from "../../components/Card.astro";
+import ProgramGroup from "../../components/ProgramGroup.astro";
 import Notice from "../../components/Notice.astro";
 import Faqs from "../../components/Faqs.astro";
 import Profiles from "../../components/Profiles.astro";
 import Gallery from "../../components/Gallery.astro";
-import { categories, datesSummary, programAction, type Category } from "../../lib/content.ts";
+import { categories, type Category } from "../../lib/content.ts";
 
 export function getStaticPaths() {
   return categories.map((category) => ({ params: { slug: category.slug }, props: { category } }));
@@ -22,23 +22,8 @@ const { category: c } = Astro.props as { category: Category };
     <Markdown source={c.top} class="mx-auto text-center" />
   </section>
   {c.programs.length > 0 && (
-    <section class="mx-auto grid max-w-6xl gap-6 px-4 py-10 sm:grid-cols-2 lg:grid-cols-3">
-      {c.programs.map((p) => {
-        const action = programAction(p, c.status);
-        const dates = datesSummary(p);
-        return (
-          <Card title={p.title} image={p.cardImage} href={`/program/${p.slug}`} kicker={p.ages || p.subtitle}>
-            {dates && <p class="font-bold text-navy">{dates}</p>}
-            <p class="flex-1 leading-relaxed">{p.summary}</p>
-            {/* Register is a card's only button; the title links to the program's page. */}
-            {action.label === "Register" && (
-              <a class="button self-start" href={action.href}>
-                Register
-              </a>
-            )}
-          </Card>
-        );
-      })}
+    <section class="mx-auto max-w-6xl px-4 py-10">
+      <ProgramGroup programs={c.programs} status={c.status} />
     </section>
   )}
   {c.testimonial && (

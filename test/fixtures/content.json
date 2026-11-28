@@ -778,7 +778,7 @@
       "id": "00000000-0000-4000-8009-000000000201",
       "name": "2027 Summer Sailing Camps",
       "opens_on": "2027-02-22",
-      "clubspot_camp_id": null
+      "clubspot_camp_id": "summer2027"
     },
     {
       "id": "00000000-0000-4000-8009-000000000202",
@@ -798,6 +798,11 @@
       "id": "springOpti",
       "registration_closed": false,
       "hide_spots_left": false
+    },
+    {
+      "id": "summer2027",
+      "registration_closed": true,
+      "hide_spots_left": false
     }
   ],
   "offerings": [
@@ -810,7 +815,7 @@
       "ends_on": "2027-06-25",
       "price_cents": 67500,
       "capacity": 12,
-      "confirmed_count": 0
+      "confirmed_count": 9
     },
     {
       "id": "00000000-0000-4000-8009-000000000302",
@@ -821,7 +826,7 @@
       "ends_on": "2027-07-02",
       "price_cents": 67500,
       "capacity": 12,
-      "confirmed_count": 0
+      "confirmed_count": 12
     },
     {
       "id": "00000000-0000-4000-8009-000000000303",
@@ -832,7 +837,7 @@
       "ends_on": "2027-07-16",
       "price_cents": 85000,
       "capacity": 10,
-      "confirmed_count": 0
+      "confirmed_count": 4
     },
     {
       "id": "00000000-0000-4000-8009-000000000304",

@@ -8,6 +8,11 @@ import {
   datesSummary,
   dayRange,
   spotsLeft,
+  weekDays,
+  weekPrice,
+  weekSchedule,
+  weeksByMonth,
+  weekSpots,
   currentVersion,
   dollars,
   faqTopics,
@@ -136,6 +141,7 @@ describe("what's on sale", () => {
             endsOn: "2027-05-23",
             priceCents: 67500,
             spots: "1 spot left",
+            left: 1,
           },
           {
             label: "Opti Race Team",
@@ -143,13 +149,15 @@ describe("what's on sale", () => {
             endsOn: "2027-05-23",
             priceCents: 75000,
             spots: "Full. Join the waitlist.",
+            left: 0,
           },
           {
             label: "Opti Regional Race Team",
             startsOn: "2027-03-01",
             endsOn: "2027-05-23",
             priceCents: 140000,
-            spots: "",
+            spots: "8 spots left",
+            left: 8,
           },
         ],
       },
@@ -196,8 +204,8 @@ describe("ages", () => {
 });
 
 describe("spotsLeft", () => {
-  it("shows spots only when 5 or fewer are left, and full at none", () => {
-    expect(spotsLeft(12, 0, false)).toBe("");
+  it("shows every count, and full at none", () => {
+    expect(spotsLeft(12, 0, false)).toBe("12 spots left");
     expect(spotsLeft(12, 7, false)).toBe("5 spots left");
     expect(spotsLeft(12, 11, false)).toBe("1 spot left");
     expect(spotsLeft(12, 12, false)).toBe("Full. Join the waitlist.");
@@ -207,6 +215,51 @@ describe("spotsLeft", () => {
   it("shows nothing when Clubspot hides spots left, or there's no limit", () => {
     expect(spotsLeft(12, 12, true)).toBe("");
     expect(spotsLeft(null, 3, false)).toBe("");
+  });
+});
+
+describe("weekSchedule", () => {
+  const at = buildContent(fixtures, "2026-11-21");
+  const program = (slug: string) => at.programs.find((p) => p.slug === slug)!;
+
+  it("lays a category's camps out by week, with a gap where a camp doesn't run", () => {
+    const schedule = weekSchedule([program("learn-to-sail"), program("adventure-camp")])!;
+    expect(schedule.weeks.map((w) => w.startsOn)).toEqual(["2027-06-21", "2027-06-28", "2027-07-12"]);
+    expect(schedule.rows.map((r) => [r.program.slug, r.cells.map((c) => c?.label)])).toEqual([
+      ["learn-to-sail", ["Week 1", "Week 2", undefined]],
+      ["adventure-camp", [undefined, undefined, "Week 4"]],
+    ]);
+  });
+
+  it("knows each week's spots once the form has a Clubspot camp, even before it takes registrations", () => {
+    const schedule = weekSchedule([program("learn-to-sail"), program("adventure-camp")])!;
+    expect(schedule.rows.map((r) => r.cells.map((c) => c?.left))).toEqual([
+      [3, 0, undefined],
+      [undefined, undefined, 6],
+    ]);
+    expect(program("learn-to-sail").registration).toBe("coming");
+  });
+
+  it("has none for a season longer than a week, and no row for a program with nothing on sale", () => {
+    expect(weekSchedule([program("opti-race-team")])).toBeUndefined();
+    expect(weekSchedule([program("laser-race-team")])).toBeUndefined();
+    expect(weekSchedule([program("learn-to-sail"), program("laser-race-team")])!.rows).toHaveLength(1);
+  });
+
+  it("groups weeks by the month they start in, and names their days", () => {
+    const weeks = weekSchedule([program("learn-to-sail"), program("adventure-camp")])!.weeks;
+    expect(weeksByMonth(weeks).map((m) => [m.month, m.weeks.map(weekDays)])).toEqual([
+      ["June", ["21–25", "28–2"]],
+      ["July", ["12–16"]],
+    ]);
+  });
+
+  it("says each week's spots and the price", () => {
+    const row = { label: "Week 1", startsOn: "2027-06-21", endsOn: "2027-06-25", priceCents: 67500, spots: "" };
+    expect(weekSpots({ ...row, left: 3 })).toBe("3 left");
+    expect(weekSpots({ ...row, left: 0 })).toBe("Full");
+    expect(weekSpots({ ...row, left: null })).toBe("");
+    expect(weekPrice(program("learn-to-sail"))).toBe("$675 a week");
   });
 });
 

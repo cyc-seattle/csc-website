@@ -1,0 +1,53 @@
+---
+// A category's programs: their cards side by side, then, for camps sold by the week, one schedule for the group on a
+// laptop. On a phone each card holds its own weeks instead, so a camp, its weeks and its Register stay together.
+import Card from "./Card.astro";
+import RegisterButton from "./RegisterButton.astro";
+import ScheduleBox from "./ScheduleBox.astro";
+import WeekRows from "./WeekRows.astro";
+import WeekSchedule from "./WeekSchedule.astro";
+import { datesSummary, programAction, weekPrice, weekSchedule, type Program, type Status } from "../lib/content.ts";
+
+interface Props {
+  programs: Program[];
+  status: Status;
+}
+const { programs, status } = Astro.props;
+const schedule = weekSchedule(programs);
+const register = (p: Program) => {
+  const action = programAction(p, status);
+  return action.label === "Register" ? action.href : undefined;
+};
+const one = programs.length === 1;
+---
+
+<div>
+  <div class:list={["grid gap-6", !one && "sm:grid-cols-2 lg:grid-cols-3"]}>
+    {programs.map((p) => {
+      const row = schedule?.rows.find((r) => r.program === p);
+      const dates = datesSummary(p);
+      return (
+        <Card title={p.title} image={p.cardImage} href={`/program/${p.slug}`} kicker={p.ages || p.subtitle} wide={one}>
+          {!row && dates && <p class="font-bold text-navy">{dates}</p>}
+          <p class="flex-1 leading-relaxed">{p.summary}</p>
+          {row ? (
+            <div class="mt-2 space-y-2 border-t border-line pt-3 lg:hidden">
+              <div class="flex items-center justify-between gap-2">
+                <p class="text-[13px] font-bold text-navy">{weekPrice(p)}</p>
+                <RegisterButton href={register(p)} class="px-3.5 py-1.5 text-sm" />
+              </div>
+              <WeekRows weeks={schedule!.weeks} cells={row.cells} />
+            </div>
+          ) : (
+            <RegisterButton href={register(p)} class="self-start" />
+          )}
+        </Card>
+      );
+    })}
+  </div>
+  {schedule && (
+    <ScheduleBox title="Weeks and spots left" class="mt-5 hidden lg:block">
+      <WeekSchedule schedule={schedule} register={register} />
+    </ScheduleBox>
+  )}
+</div>

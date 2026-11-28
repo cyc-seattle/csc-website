@@ -15,6 +15,8 @@ interface Props {
   sizes?: string;
   /** The title's level, so a page's headings stay in order: h2 where the cards are the page's first sections. */
   heading?: "h2" | "h3";
+  /** The picture beside the text from tablet width up, for a group with only one card. */
+  wide?: boolean;
 }
 const {
   title,
@@ -24,11 +26,20 @@ const {
   kicker,
   sizes = "(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw",
   heading: Heading = "h3",
+  wide = false,
 } = Astro.props;
 ---
 
-<article class="card flex w-full flex-col">
-  {image && <Img id={image} alt="" widths={[480, 800]} sizes={sizes} class="aspect-[16/10] w-full object-cover" />}
+<article class:list={["card flex w-full flex-col", wide && "md:flex-row"]}>
+  {image && (
+    <Img
+      id={image}
+      alt=""
+      widths={[480, 800]}
+      sizes={sizes}
+      class:list={["aspect-[16/10] w-full object-cover", wide && "md:aspect-auto md:w-2/5 md:self-stretch"]}
+    />
+  )}
   <div class="flex flex-1 flex-col gap-1.5 p-5">
     {tag && (
       <span class="self-start rounded border border-signal px-2 py-0.5 text-[11px] font-black uppercase tracking-wider text-signal">

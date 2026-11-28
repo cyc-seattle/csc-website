@@ -1,0 +1,14 @@
+---
+// The one Register button, to the program's Clubspot camp. Nothing while registration isn't open.
+interface Props {
+  href: string | undefined;
+  class?: string;
+}
+const { href, class: className } = Astro.props;
+---
+
+{href && (
+  <a class:list={["button", className]} href={href}>
+    Register
+  </a>
+)}

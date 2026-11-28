@@ -38,6 +38,23 @@
   .button-quiet {
     @apply inline-flex items-center justify-center rounded-card border border-navy bg-white px-5 py-2 font-bold text-navy transition hover:bg-navy hover:text-white;
   }
+  /* Schedules (cyc-seattle/csc-website#18): rounded cells with even 4px gaps; a missing week is one stripe style. */
+  .schedule-title {
+    @apply mb-2 text-[13px] font-black uppercase tracking-widest text-navy;
+  }
+  .schedule-cell {
+    @apply flex h-full min-h-9 items-center justify-center rounded px-1 py-2 text-center text-xs font-bold leading-tight;
+  }
+  .schedule-cell-on {
+    @apply bg-navy text-white;
+  }
+  .schedule-cell-full {
+    @apply bg-[#e6e9f0] text-signal;
+  }
+  .schedule-cell-off {
+    @apply border border-line;
+    background: repeating-linear-gradient(135deg, #eef1f5 0 6px, #fff 6px 12px);
+  }
   .prose table {
     @apply text-sm;
   }

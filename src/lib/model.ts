@@ -53,8 +53,10 @@ export interface DateRow {
   startsOn: string | null;
   endsOn: string | null;
   priceCents: number | null;
-  /** Such as "3 spots left", shown only when few are left, or empty. */
+  /** Such as "3 spots left", or empty when Clubspot doesn't say. */
   spots: string;
+  /** How many spots are left, 0 when it's full, or null when Clubspot doesn't say. */
+  left: number | null;
 }
 
 /** A program's offerings on one registration form, such as 2027 Summer Sailing Camps. */
@@ -307,13 +309,20 @@ export function ages(min: number | null, max: number | null): string {
   return "";
 }
 
-/** "3 spots left" at 5 or fewer, "Full. Join the waitlist." at none, and otherwise nothing, so a page doesn't go stale. */
+/**
+ * How many spots are left, or null when Clubspot hides them or there's no limit. The site republishes when offerings
+ * change (cyc-seattle/platform#350), so it shows every count, not only a low one.
+ */
+export function left(capacity: number | null, confirmed: number, hidden: boolean): number | null {
+  return hidden || capacity === null ? null : Math.max(capacity - confirmed, 0);
+}
+
+/** "3 spots left", "1 spot left", "Full. Join the waitlist." at none, or nothing when the count isn't known. */
 export function spotsLeft(capacity: number | null, confirmed: number, hidden: boolean): string {
-  if (hidden || capacity === null) return "";
-  const left = capacity - confirmed;
-  if (left <= 0) return "Full. Join the waitlist.";
-  if (left === 1) return "1 spot left";
-  return left <= 5 ? `${left} spots left` : "";
+  const n = left(capacity, confirmed, hidden);
+  if (n === null) return "";
+  if (n === 0) return "Full. Join the waitlist.";
+  return n === 1 ? "1 spot left" : `${n} spots left`;
 }
 
 const clubspot = (campId: string) => `https://theclubspot.com/register/camp/${campId}/class`;
@@ -358,6 +367,7 @@ export function programDates(
       endsOn: o.ends_on,
       priceCents: o.price_cents,
       spots: camp ? spotsLeft(o.capacity, o.confirmed_count, camp.hide_spots_left) : "",
+      left: camp ? left(o.capacity, o.confirmed_count, camp.hide_spots_left) : null,
     });
   }
   return [...groups.values()];
@@ -404,6 +414,82 @@ export function datesSummary(program: Program): string {
   const span = dayRange(starts[0] ?? null, ends.at(-1) ?? null);
   const price = prices.length === 0 ? "" : prices.length === 1 ? dollars(prices[0]!) : `from ${dollars(prices[0]!)}`;
   return [span, price].filter(Boolean).join(" · ");
+}
+
+/** A week a category's camps run in: one column of its schedule. */
+export interface Week {
+  startsOn: string;
+  endsOn: string;
+}
+
+/** A category's camps by week: one row per program, with its offering in each week, or none that week. */
+export interface WeekSchedule {
+  weeks: Week[];
+  rows: { program: Program; cells: (DateRow | undefined)[] }[];
+}
+
+const days = (from: string, to: string) => (Date.parse(to) - Date.parse(from)) / 86_400_000;
+
+/**
+ * The programs' offerings by week, when every dated offering is a week or less, as summer camps are. A program with
+ * no offerings has no row. There's none for programs that sell longer offerings, such as a race team's season.
+ */
+export function weekSchedule(programs: Program[]): WeekSchedule | undefined {
+  const dated = programs.map((program) => ({
+    program,
+    rows: program.dates.flatMap((g) => g.rows).filter((r) => r.startsOn !== null && r.endsOn !== null),
+  }));
+  const all = dated.flatMap((d) => d.rows);
+  if (all.length === 0 || all.some((r) => days(r.startsOn!, r.endsOn!) > 6)) return undefined;
+  const weeks = [...new Map(all.map((r) => [r.startsOn!, { startsOn: r.startsOn!, endsOn: r.endsOn! }])).values()].sort(
+    (a, b) => a.startsOn.localeCompare(b.startsOn),
+  );
+  return {
+    weeks,
+    rows: dated
+      .filter((d) => d.rows.length > 0)
+      .map(({ program, rows }) => ({
+        program,
+        cells: weeks.map((w) => rows.find((r) => r.startsOn === w.startsOn)),
+      })),
+  };
+}
+
+/** The weeks in each month, by the month each week starts in, such as June's two weeks. */
+export function weeksByMonth(weeks: Week[]): { month: string; weeks: Week[] }[] {
+  const months: { month: string; weeks: Week[] }[] = [];
+  for (const week of weeks) {
+    const month = new Date(`${week.startsOn}T00:00:00Z`).toLocaleDateString("en-US", {
+      month: "long",
+      timeZone: "UTC",
+    });
+    if (months.at(-1)?.month === month) months.at(-1)!.weeks.push(week);
+    else months.push({ month, weeks: [week] });
+  }
+  return months;
+}
+
+/** A week's days, such as "21–25", or "28–2" for one that runs into the next month. */
+export const weekDays = (week: Week) => `${Number(week.startsOn.slice(8))}–${Number(week.endsOn.slice(8))}`;
+
+/** A week's cell: "3 left", "Full", or nothing when Clubspot doesn't say yet. */
+export function weekSpots(row: DateRow): string {
+  if (row.left === null) return "";
+  return row.left === 0 ? "Full" : `${row.left} left`;
+}
+
+/** What a program's weeks cost, such as "$675 a week", or "from $650 a week" when they differ. */
+export function weekPrice(program: Program): string {
+  const prices = [
+    ...new Set(
+      program.dates
+        .flatMap((g) => g.rows)
+        .map((r) => r.priceCents)
+        .filter((c) => c !== null),
+    ),
+  ].sort((a, b) => a - b);
+  if (prices.length === 0) return "";
+  return `${prices.length > 1 ? "from " : ""}${dollars(prices[0]!)} a week`;
 }
 
 /** Whole dollars when it's even, such as $1,500, and cents only when there are some. */

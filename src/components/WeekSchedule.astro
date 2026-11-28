@@ -1,0 +1,52 @@
+---
+// A group's camps by week, on a laptop: weeks across under their months, one row per camp, Register at the end.
+import RegisterButton from "./RegisterButton.astro";
+import ScheduleCell from "./ScheduleCell.astro";
+import { weekDays, weekPrice, weeksByMonth, type Program, type WeekSchedule } from "../lib/content.ts";
+
+interface Props {
+  schedule: WeekSchedule;
+  register: (program: Program) => string | undefined;
+}
+const { schedule, register } = Astro.props;
+---
+
+<table class="w-full table-fixed border-separate border-spacing-1">
+  <thead>
+    <tr>
+      <th class="w-48"></th>
+      {weeksByMonth(schedule.weeks).map((m) => (
+        <th colspan={m.weeks.length} class="border-b-2 border-navy pb-0.5 text-left text-[13px] font-black text-navy">
+          {m.month}
+        </th>
+      ))}
+      <th class="w-28"></th>
+    </tr>
+    <tr>
+      <th></th>
+      {schedule.weeks.map((w) => (
+        <th class="pt-1 text-xs font-bold text-slate-500">{weekDays(w)}</th>
+      ))}
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {schedule.rows.map(({ program, cells }) => (
+      <tr>
+        <th scope="row" class="pr-3 text-left align-middle">
+          <span class="block text-[15px] font-black text-navy">{program.title}</span>
+          <span class="text-xs font-bold text-signal">{weekPrice(program)}</span>
+        </th>
+        {cells.map((row) => (
+          // A height lets each cell stretch to its row, so a row stays even when a name wraps.
+          <td class="h-px">
+            <ScheduleCell row={row} />
+          </td>
+        ))}
+        <td class="text-right align-middle">
+          <RegisterButton href={register(program)} />
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
