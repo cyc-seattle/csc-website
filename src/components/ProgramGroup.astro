@@ -6,14 +6,28 @@ import RegisterButton from "./RegisterButton.astro";
 import ScheduleBox from "./ScheduleBox.astro";
 import WeekRows from "./WeekRows.astro";
 import WeekSchedule from "./WeekSchedule.astro";
-import { datesSummary, programAction, weekPrice, weekSchedule, type Program, type Status } from "../lib/content.ts";
+import {
+  datesSummary,
+  programAction,
+  weekPrice,
+  weekSchedule,
+  type Program,
+  type Status,
+  type Week,
+} from "../lib/content.ts";
 
 interface Props {
+  /** The group's title, such as Youth Sailing, or empty for programs in no group. */
+  title: string;
+  /** Such as "Ages 8–12", worked out from its programs. */
+  ages: string;
   programs: Program[];
   status: Status;
+  /** The category's weeks, so every group's schedule has the same columns. */
+  weeks: Week[] | undefined;
 }
-const { programs, status } = Astro.props;
-const schedule = weekSchedule(programs);
+const { title, ages, programs, status, weeks } = Astro.props;
+const schedule = weekSchedule(programs, weeks);
 const register = (p: Program) => {
   const action = programAction(p, status);
   return action.label === "Register" ? action.href : undefined;
@@ -22,6 +36,17 @@ const one = programs.length === 1;
 ---
 
 <div>
+  {title && (
+    <h2 class="mb-5 border-b-2 border-navy pb-2 text-2xl font-black text-navy">
+      {title}
+      {ages && (
+        <>
+          <span class="sr-only">:</span>
+          <span class="ml-2.5 text-[15px] font-black uppercase tracking-wider text-signal">{ages}</span>
+        </>
+      )}
+    </h2>
+  )}
   <div class:list={["grid gap-6", !one && "sm:grid-cols-2 lg:grid-cols-3"]}>
     {programs.map((p) => {
       const row = schedule?.rows.find((r) => r.program === p);
