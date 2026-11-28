@@ -4,16 +4,25 @@ import Banner from "../../components/Banner.astro";
 import Markdown from "../../components/Markdown.astro";
 import ProgramGroup from "../../components/ProgramGroup.astro";
 import Notice from "../../components/Notice.astro";
+import SummaryBoard from "../../components/SummaryBoard.astro";
 import Faqs from "../../components/Faqs.astro";
 import Profiles from "../../components/Profiles.astro";
 import Gallery from "../../components/Gallery.astro";
-import { categories, scheduleWeeks, type Category } from "../../lib/content.ts";
+import { categories, scheduleWeeks, weekSchedule, type Category } from "../../lib/content.ts";
 
 export function getStaticPaths() {
   return categories.map((category) => ({ params: { slug: category.slug }, props: { category } }));
 }
 const { category: c } = Astro.props as { category: Category };
 const weeks = scheduleWeeks(c.programs);
+// The summary board puts every group's camps in one place, in the page's order, so it's for a page with several groups.
+const board =
+  c.groups.length > 1
+    ? weekSchedule(
+        c.groups.flatMap((g) => g.programs),
+        weeks,
+      )
+    : undefined;
 ---
 
 <Base title={c.title} description={c.summary} shareImage={c.image}>
@@ -29,6 +38,7 @@ const weeks = scheduleWeeks(c.programs);
       ))}
     </section>
   )}
+  {board && <SummaryBoard schedule={board} />}
   {c.testimonial && (
     <figure class="mx-auto my-6 max-w-6xl px-4 text-center">
       <blockquote class="mx-auto max-w-3xl text-xl italic leading-relaxed text-navy">“{c.testimonial}”</blockquote>

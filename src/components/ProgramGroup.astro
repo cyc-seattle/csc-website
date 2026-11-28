@@ -72,7 +72,7 @@ const one = programs.length === 1;
   </div>
   {schedule && (
     <ScheduleBox title="Spots left by week" class="mt-5 hidden lg:block">
-      <WeekSchedule schedule={schedule} register={register} />
+      <WeekSchedule schedule={schedule} detail={weekPrice} register={register} />
     </ScheduleBox>
   )}
 </div>

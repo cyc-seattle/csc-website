@@ -26,16 +26,18 @@ for (const [name, path] of pages) {
 }
 
 // Close-ups of each schedule at twice the size, to check its gaps and stripes.
-const schedules = [["summer-schedule", "/program-category/summer-camp"]] as const;
-for (const [name, path] of schedules) {
+const schedules = [
+  ["summer-schedule", "/program-category/summer-camp", ".card:has(> .schedule-title)", ".card:has(.schedule-cell)"],
+  ["summer-board", "/program-category/summer-camp", "#summary-board", "#summary-board"],
+] as const;
+for (const [name, path, laptop, phone] of schedules) {
   for (const [size, viewport] of Object.entries(sizes)) {
     test(`${name} close-up at ${size}`, async ({ browser }) => {
       const context = await browser.newContext({ viewport, deviceScaleFactor: 2 });
       const page = await context.newPage();
       await page.goto(path);
-      // A laptop shows the group's schedule; a phone, each card's own weeks.
-      const schedule =
-        size === "laptop" ? page.locator(".card:has(> .schedule-title)") : page.locator(".card:has(.schedule-cell)");
+      // On a phone, a group's schedule is each card's own weeks.
+      const schedule = page.locator(size === "laptop" ? laptop : phone);
       await schedule.first().screenshot({ path: `screenshots/${name}-${size}.png` });
       await context.close();
     });

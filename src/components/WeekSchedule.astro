@@ -1,51 +1,58 @@
 ---
-// A group's camps by week, on a laptop: weeks across under their months, one row per camp, Register at the end.
+// Camps by week: weeks across under their months, one row per camp. A group's schedule ends each row with Register;
+// the summary board shows ages instead and leaves Register to the cards.
 import RegisterButton from "./RegisterButton.astro";
 import ScheduleCell from "./ScheduleCell.astro";
-import { weekDays, weekPrice, weeksByMonth, type Program, type WeekSchedule } from "../lib/content.ts";
+import { weekDays, weeksByMonth, type Program, type Week, type WeekSchedule } from "../lib/content.ts";
 
 interface Props {
   schedule: WeekSchedule;
-  register: (program: Program) => string | undefined;
+  /** The weeks to show, such as one month's on a phone. All of them when left out. */
+  weeks?: Week[];
+  /** The red line under each camp's name, such as its price or ages. */
+  detail: (program: Program) => string;
+  register?: ((program: Program) => string | undefined) | undefined;
 }
-const { schedule, register } = Astro.props;
+const { schedule, weeks = schedule.weeks, detail, register } = Astro.props;
 ---
 
 <table class="w-full table-fixed border-separate border-spacing-1">
   <thead>
     <tr>
-      <th class="w-48"></th>
-      {weeksByMonth(schedule.weeks).map((m) => (
+      <th class="w-[38%] sm:w-48"></th>
+      {weeksByMonth(weeks).map((m) => (
         <th colspan={m.weeks.length} class="border-b-2 border-navy pb-0.5 text-left text-[13px] font-black text-navy">
           {m.month}
         </th>
       ))}
-      <th class="w-28"></th>
+      {register && <th class="w-28" />}
     </tr>
     <tr>
-      <th></th>
-      {schedule.weeks.map((w) => (
-        <th class="pt-1 text-xs font-bold text-slate-500">{weekDays(w)}</th>
+      <th />
+      {weeks.map((w) => (
+        <th class="pt-1 text-[11px] font-bold text-slate-500 lg:text-xs">{weekDays(w)}</th>
       ))}
-      <th></th>
+      {register && <th />}
     </tr>
   </thead>
   <tbody>
     {schedule.rows.map(({ program, cells }) => (
       <tr>
-        <th scope="row" class="pr-3 text-left align-middle">
-          <span class="block text-[15px] font-black text-navy">{program.title}</span>
-          <span class="text-xs font-bold text-signal">{weekPrice(program)}</span>
+        <th scope="row" class="pr-2 text-left align-middle">
+          <span class="block text-[11px] font-black text-navy sm:text-[15px]">{program.title}</span>
+          <span class="text-[11px] font-bold text-signal sm:text-xs">{detail(program)}</span>
         </th>
-        {cells.map((row) => (
+        {weeks.map((w) => (
           // A height lets each cell stretch to its row, so a row stays even when a name wraps.
           <td class="h-px">
-            <ScheduleCell row={row} />
+            <ScheduleCell row={cells[schedule.weeks.indexOf(w)]} />
           </td>
         ))}
-        <td class="text-right align-middle">
-          <RegisterButton href={register(program)} />
-        </td>
+        {register && (
+          <td class="text-right align-middle">
+            <RegisterButton href={register(program)} />
+          </td>
+        )}
       </tr>
     ))}
   </tbody>
