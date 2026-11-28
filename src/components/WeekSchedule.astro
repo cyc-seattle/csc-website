@@ -21,7 +21,7 @@ const { schedule, weeks = schedule.weeks, detail, register } = Astro.props;
     <tr>
       <th class="w-[38%] sm:w-48"></th>
       {weeksByMonth(weeks).map((m) => (
-        <th colspan={m.weeks.length} class="border-b-2 border-navy pb-0.5 text-left text-[13px] font-black text-navy">
+        <th colspan={m.weeks.length} class="month-heading">
           {m.month}
         </th>
       ))}

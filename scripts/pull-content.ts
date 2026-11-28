@@ -3,9 +3,9 @@
 //
 // CONTENT_SOURCE=fixtures (the default) copies test/fixtures/. CONTENT_SOURCE=directus reads DIRECTUS_URL as the
 // Website Build user, with DIRECTUS_TOKEN. Its policy lets it read only the website_* collections, what's on sale from
-// the catalog (some fields of programs, offerings, registration forms and public Clubspot camps), crew on the website
-// with their current terms and their first and last names, and the Website folder's files (cyc-seattle/platform#150,
-// cyc-seattle/platform#332, cyc-seattle/platform#263).
+// the catalog (some fields of programs, offerings and their schedules, registration forms and public Clubspot camps),
+// crew on the website with their current terms and their first and last names, and the Website folder's files
+// (cyc-seattle/platform#150, cyc-seattle/platform#332, cyc-seattle/platform#263, cyc-seattle/platform#396).
 
 import { createWriteStream } from "node:fs";
 import { cp, mkdir, readdir, rm, stat, writeFile } from "node:fs/promises";

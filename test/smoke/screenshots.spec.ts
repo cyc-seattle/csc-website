@@ -4,6 +4,7 @@ import { test } from "@playwright/test";
 const pages = [
   ["home", "/"],
   ["category", "/program-category/summer-camp"],
+  ["adult", "/program-category/adult-sailing-classes"],
   ["program", "/program/opti-race-team"],
   ["crew", "/our-crew"],
   ["donate", "/donate"],
@@ -29,6 +30,12 @@ for (const [name, path] of pages) {
 const schedules = [
   ["summer-schedule", "/program-category/summer-camp", ".card:has(> .schedule-title)", ".card:has(.schedule-cell)"],
   ["summer-board", "/program-category/summer-camp", "#summary-board", "#summary-board"],
+  [
+    "adult-schedule",
+    "/program-category/adult-sailing-classes",
+    ".card:has(> .schedule-title):has(.schedule-cell-class)",
+    ".card:has(.schedule-cell-class)",
+  ],
 ] as const;
 for (const [name, path, laptop, phone] of schedules) {
   for (const [size, viewport] of Object.entries(sizes)) {

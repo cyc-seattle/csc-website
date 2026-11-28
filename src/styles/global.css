@@ -39,6 +39,10 @@
     @apply inline-flex items-center justify-center rounded-card border border-navy bg-white px-5 py-2 font-bold text-navy transition hover:bg-navy hover:text-white;
   }
   /* Schedules (cyc-seattle/csc-website#18): rounded cells with even 4px gaps; a missing week is one stripe style. */
+  /* A month's name over its weeks or classes, left-aligned with a navy line under it, on laptops and phones. */
+  .month-heading {
+    @apply border-b-2 border-navy pb-0.5 text-left text-[13px] font-black text-navy;
+  }
   .schedule-title {
     @apply mb-2 text-[13px] font-black uppercase tracking-widest text-navy;
   }
@@ -49,6 +53,10 @@
   /* A phone card's week tile also shows its days, on a line of its own. */
   .schedule-cell-tile {
     @apply min-h-12 flex-col;
+  }
+  /* A class's cell holds its dates, its time and its spots, on three lines. */
+  .schedule-cell-class {
+    @apply min-h-16 flex-col;
   }
   .schedule-cell-on {
     @apply bg-navy text-white;

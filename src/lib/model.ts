@@ -57,6 +57,19 @@ export interface DateRow {
   spots: string;
   /** How many spots are left, 0 when it's full, or null when Clubspot doesn't say. */
   left: number | null;
+  /** The catalog product it sells, so a program's several offerings, such as classes, can be told apart from one season. */
+  product: Id;
+  /** The weekdays it meets, Monday first. */
+  schedule: Meeting[];
+}
+
+/** One weekday an offering meets, from its schedule. */
+export interface Meeting {
+  /** 1 is Monday, 7 is Sunday. */
+  weekday: number;
+  /** Such as "16:15". */
+  startTime: string;
+  endTime: string;
 }
 
 /** A program's offerings on one registration form, such as 2027 Summer Sailing Camps. */
@@ -346,7 +359,7 @@ const clubspot = (campId: string) => `https://theclubspot.com/register/camp/${ca
  * order they start, each row by the day it starts.
  */
 export function programDates(
-  snapshot: Pick<Snapshot, "programs" | "offerings" | "registration_forms" | "clubspot_camps">,
+  snapshot: Pick<Snapshot, "programs" | "offerings" | "offering_schedule" | "registration_forms" | "clubspot_camps">,
   programIds: Id[],
   today: string,
 ): DateGroup[] {
@@ -382,6 +395,11 @@ export function programDates(
       priceCents: o.price_cents,
       spots: camp ? spotsLeft(o.capacity, o.confirmed_count, camp.hide_spots_left) : "",
       left: camp ? left(o.capacity, o.confirmed_count, camp.hide_spots_left) : null,
+      product: o.product_id,
+      schedule: snapshot.offering_schedule
+        .filter((m) => m.offering_id === o.id)
+        .map((m) => ({ weekday: m.weekday, startTime: m.start_time.slice(0, 5), endTime: m.end_time.slice(0, 5) }))
+        .toSorted((a, b) => a.weekday - b.weekday),
     });
   }
   return [...groups.values()];
@@ -508,6 +526,88 @@ export function weekPrice(program: Program): string {
   if (prices.length === 0) return "";
   return `${prices.length > 1 ? "from " : ""}${dollars(prices[0]!)} a week`;
 }
+
+export const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as const;
+const EVERY = ["Mondays", "Tuesdays", "Wednesdays", "Thursdays", "Fridays", "Saturdays", "Sundays"] as const;
+
+/** A clock time with no am or pm, as a day cell shows it: "4:15", "9", "12", "1:30". */
+export function clock(time: string): string {
+  const [h, m] = time.split(":").map(Number) as [number, number];
+  const hour = h % 12 || 12;
+  return m === 0 ? `${hour}` : `${hour}:${String(m).padStart(2, "0")}`;
+}
+
+/** A meeting's times, such as ["4:15", "7:30"]; a cell joins them with a dash it may break after. */
+export const meetingTimes = (m: Meeting): [string, string] => [clock(m.startTime), clock(m.endTime)];
+
+/** The kind of class an offering is, by the weekdays it meets: "Tue & Thu", "Wednesdays", "Mon, Wed & Fri". */
+export function classKind(schedule: Meeting[]): string {
+  const days = schedule.map((m) => WEEKDAYS[m.weekday - 1]!);
+  if (days.length === 1) return EVERY[schedule[0]!.weekday - 1]!;
+  return days.length === 2 ? days.join(" & ") : `${days.slice(0, -1).join(", ")} & ${days.at(-1)}`;
+}
+
+/** A month a group's classes start in, as "2027-05". */
+export type Month = string;
+
+/** One kind of class of one program, with its classes by the month each starts in. */
+export interface ClassRow {
+  program: Program;
+  kind: string;
+  /** The classes starting in each of the calendar's months, in its order. */
+  cells: DateRow[][];
+}
+
+/** A group's classes by month, when one of its programs sells several dated classes, as Adult Learn to Sail does. */
+export interface ClassCalendar {
+  months: Month[];
+  rows: ClassRow[];
+}
+
+const monthOf = (date: string): Month => date.slice(0, 7);
+
+/**
+ * A group's classes as a month calendar: one row per program and kind of class, Tue & Thu (or Wednesdays) before
+ * Sat & Sun, and each class in the month it starts. Every month from the first class to the last is a column, so a
+ * month with no class of a kind shows as empty. None unless some program sells several classes with a schedule.
+ */
+export function classCalendar(programs: Program[]): ClassCalendar | undefined {
+  const rows = programs.flatMap((program) =>
+    program.dates
+      .flatMap((g) => g.rows)
+      .filter((row) => row.schedule.length > 0 && row.startsOn !== null)
+      .map((row) => ({ program, row })),
+  );
+  const perProduct = new Map<Id, number>();
+  for (const { row } of rows) perProduct.set(row.product, (perProduct.get(row.product) ?? 0) + 1);
+  if (![...perProduct.values()].some((n) => n > 1)) return undefined;
+  const starts = rows.map(({ row }) => monthOf(row.startsOn!)).sort();
+  const months: Month[] = [];
+  for (let m = starts[0]!; m <= starts.at(-1)!;) {
+    months.push(m);
+    const [y, mo] = m.split("-").map(Number) as [number, number];
+    m = mo === 12 ? `${y + 1}-01` : `${y}-${String(mo + 1).padStart(2, "0")}`;
+  }
+  const first = (row: DateRow) => row.schedule[0]!.weekday;
+  return {
+    months,
+    rows: programs.flatMap((program) => {
+      const mine = rows.filter((r) => r.program === program).map((r) => r.row);
+      const kinds = [
+        ...new Map(mine.toSorted((a, b) => first(a) - first(b)).map((r) => [classKind(r.schedule), r])).keys(),
+      ];
+      return kinds.map((kind): ClassRow => ({
+        program,
+        kind,
+        cells: months.map((m) => mine.filter((r) => classKind(r.schedule) === kind && monthOf(r.startsOn!) === m)),
+      }));
+    }),
+  };
+}
+
+/** A month's short name, such as "May", for a calendar's columns. */
+export const monthName = (month: Month) =>
+  new Date(`${month}-01T00:00:00Z`).toLocaleDateString("en-US", { month: "short", timeZone: "UTC" });
 
 /** A group's ages: from its youngest program's youngest to its oldest program's oldest. */
 export function groupAges(programs: Program[]): string {

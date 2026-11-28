@@ -1,0 +1,27 @@
+---
+// One program's classes inside its card, on a phone: a box for each month with the month's name over it, and in
+// each box a slot per kind of class in the same order, striped where that month has no class of the kind.
+import ScheduleCell from "./ScheduleCell.astro";
+import { monthName, type ClassRow, type Month } from "../lib/content.ts";
+
+interface Props {
+  months: Month[];
+  rows: ClassRow[];
+}
+const { months, rows } = Astro.props;
+---
+
+<div class="grid grid-cols-3 gap-x-1 gap-y-3 [&_.schedule-cell]:text-[11px]">
+  {months.map((m, i) => (
+    <div class="flex flex-col gap-1">
+      <p class="month-heading">{monthName(m)}</p>
+      {rows.map((r) =>
+        r.cells[i]!.length > 0 ? (
+          r.cells[i]!.map((c) => <ScheduleCell classRow={c} />)
+        ) : (
+          <ScheduleCell classRow={null} />
+        ),
+      )}
+    </div>
+  ))}
+</div>

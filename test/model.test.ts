@@ -8,6 +8,11 @@ import {
   datesSummary,
   dayRange,
   spotsLeft,
+  classCalendar,
+  classKind,
+  clock,
+  monthName,
+  meetingTimes,
   weekDays,
   weekPrice,
   scheduleWeeks,
@@ -132,7 +137,7 @@ describe("what's on sale", () => {
     const opti = program("opti-race-team");
     expect(opti.registration).toBe("open");
     expect(opti.ages).toBe("Ages 8–15");
-    expect(opti.dates).toEqual([
+    expect(opti.dates).toMatchObject([
       {
         form: "2027 Spring Singlehanded Race Teams",
         registerUrl: "https://theclubspot.com/register/camp/springOpti/class",
@@ -164,6 +169,16 @@ describe("what's on sale", () => {
           },
         ],
       },
+    ]);
+  });
+
+  it("reads each offering's schedule, Monday first", () => {
+    const regional = program("opti-race-team").dates[0]!.rows.find((r) => r.label === "Opti Regional Race Team")!;
+    expect(regional.schedule).toEqual([
+      { weekday: 1, startTime: "16:15", endTime: "19:30" },
+      { weekday: 3, startTime: "16:15", endTime: "19:30" },
+      { weekday: 6, startTime: "09:30", endTime: "13:30" },
+      { weekday: 7, startTime: "10:00", endTime: "14:00" },
     ]);
   });
 
@@ -287,11 +302,56 @@ describe("weekSchedule", () => {
   });
 
   it("says each week's spots and the price", () => {
-    const row = { label: "Week 1", startsOn: "2027-06-21", endsOn: "2027-06-25", priceCents: 67500, spots: "" };
+    const row = {
+      label: "Week 1",
+      startsOn: "2027-06-21",
+      endsOn: "2027-06-25",
+      priceCents: 67500,
+      spots: "",
+      product: "p",
+      schedule: [],
+    };
     expect(weekSpots({ ...row, left: 3 })).toBe("3 left");
     expect(weekSpots({ ...row, left: 0 })).toBe("Full");
     expect(weekSpots({ ...row, left: null })).toBe("");
     expect(weekPrice(program("learn-to-sail"))).toBe("$675 a week");
+  });
+});
+
+describe("clock", () => {
+  it("writes times with no am or pm", () => {
+    expect(["16:15", "09:00", "12:00", "13:30", "00:30"].map(clock)).toEqual(["4:15", "9", "12", "1:30", "12:30"]);
+    expect(meetingTimes({ weekday: 6, startTime: "09:30", endTime: "13:30" })).toEqual(["9:30", "1:30"]);
+  });
+});
+
+describe("classCalendar", () => {
+  const at = buildContent(fixtures, "2026-11-21");
+  const program = (slug: string) => at.programs.find((p) => p.slug === slug)!;
+  const calendar = classCalendar([program("adult-learn-to-sail"), program("adult-racing-clinic")])!;
+
+  it("has a column for every month from the first class to the last", () => {
+    expect(calendar.months).toEqual(["2027-05", "2027-06", "2027-07", "2027-08", "2027-09"]);
+    expect(calendar.months.map(monthName)).toEqual(["May", "Jun", "Jul", "Aug", "Sep"]);
+  });
+
+  it("has a row per program and kind of class, Tue & Thu before Sat & Sun, each class in the month it starts", () => {
+    expect(calendar.rows.map((r) => [r.program.slug, r.kind, r.cells.map((c) => c.map((x) => x.startsOn))])).toEqual([
+      ["adult-learn-to-sail", "Tue & Thu", [["2027-05-11"], ["2027-06-08"], [], ["2027-08-03"], ["2027-09-14"]]],
+      ["adult-learn-to-sail", "Sat & Sun", [[], ["2027-06-05"], [], ["2027-08-07"], ["2027-09-18"]]],
+      ["adult-racing-clinic", "Wednesdays", [[], ["2027-06-02"], [], ["2027-08-04"], []]],
+    ]);
+  });
+
+  it("has none for race teams' seasons or weekly camps' groups that sell one offering each", () => {
+    expect(classCalendar([program("opti-race-team")])).toBeUndefined();
+    expect(
+      classKind([
+        { weekday: 1, startTime: "", endTime: "" },
+        { weekday: 3, startTime: "", endTime: "" },
+        { weekday: 5, startTime: "", endTime: "" },
+      ]),
+    ).toBe("Mon, Wed & Fri");
   });
 });
 
@@ -362,6 +422,7 @@ describe("buildContent", () => {
       "junior-race-teams",
       "community-boating",
       "adventure-sailing",
+      "adult-sailing-classes",
     ]);
     const camp = content.categories[0]!;
     expect(camp.profiles.map((p) => p.name)).toEqual(["Morgan", "Riley Placeholder"]);

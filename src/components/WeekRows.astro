@@ -21,7 +21,7 @@ const cell = (w: Week) => cells[weeks.indexOf(w)];
     <>
       <span class="self-center text-[11px] font-black uppercase tracking-wide text-navy">{m.month.slice(0, 3)}</span>
       {m.weeks.map((w) => (
-        <ScheduleCell row={cell(w)} days={weekDays(w)} />
+        <ScheduleCell row={cell(w)} label={weekDays(w)} />
       ))}
       {Array.from({ length: columns - m.weeks.length }, () => (
         <span />
