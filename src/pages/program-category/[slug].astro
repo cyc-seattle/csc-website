@@ -4,15 +4,18 @@ import Banner from "../../components/Banner.astro";
 import Markdown from "../../components/Markdown.astro";
 import ProgramGroup from "../../components/ProgramGroup.astro";
 import Notice from "../../components/Notice.astro";
+import SummaryBoard from "../../components/SummaryBoard.astro";
 import Faqs from "../../components/Faqs.astro";
 import Profiles from "../../components/Profiles.astro";
 import Gallery from "../../components/Gallery.astro";
-import { categories, type Category } from "../../lib/content.ts";
+import { categories, weekSchedule, type Category } from "../../lib/content.ts";
 
 export function getStaticPaths() {
   return categories.map((category) => ({ params: { slug: category.slug }, props: { category } }));
 }
 const { category: c } = Astro.props as { category: Category };
+// The summary board is for a category with several camps sold by the week.
+const board = weekSchedule(c.programs);
 ---
 
 <Base title={c.title} description={c.summary} shareImage={c.image}>
@@ -26,6 +29,7 @@ const { category: c } = Astro.props as { category: Category };
       <ProgramGroup programs={c.programs} status={c.status} />
     </section>
   )}
+  {board && board.rows.length > 1 && <SummaryBoard schedule={board} />}
   {c.testimonial && (
     <figure class="mx-auto my-6 max-w-6xl px-4 text-center">
       <blockquote class="mx-auto max-w-3xl text-xl italic leading-relaxed text-navy">“{c.testimonial}”</blockquote>

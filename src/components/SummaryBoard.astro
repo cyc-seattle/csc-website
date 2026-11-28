@@ -1,0 +1,28 @@
+---
+// All of a category's camps, week by week: one camp per row, always in the same order, so a parent with several kids
+// can read down one week. On a phone it splits into one board per month, so it never scrolls sideways.
+import ScheduleBox from "./ScheduleBox.astro";
+import SectionHeading from "./SectionHeading.astro";
+import WeekSchedule from "./WeekSchedule.astro";
+import { weeksByMonth, type Program, type WeekSchedule as Schedule } from "../lib/content.ts";
+
+interface Props {
+  schedule: Schedule;
+}
+const { schedule } = Astro.props;
+const ages = (p: Program) => p.ages || p.subtitle;
+---
+
+<section id="summary-board" class="mx-auto max-w-6xl px-4 py-12">
+  <SectionHeading>All camps, week by week</SectionHeading>
+  <ScheduleBox title="Spots left by week">
+    <div class="hidden lg:block">
+      <WeekSchedule schedule={schedule} detail={ages} />
+    </div>
+    <div class="space-y-4 lg:hidden [&_.schedule-cell]:text-[11px]">
+      {weeksByMonth(schedule.weeks).map((m) => (
+        <WeekSchedule schedule={schedule} weeks={m.weeks} detail={ages} />
+      ))}
+    </div>
+  </ScheduleBox>
+</section>
