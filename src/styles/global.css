@@ -42,8 +42,13 @@
   .schedule-title {
     @apply mb-2 text-[13px] font-black uppercase tracking-widest text-navy;
   }
+  /* Every cell is the same height whatever it holds, "3 left", "Full", or stripes; a row's cells stretch together. */
   .schedule-cell {
-    @apply flex h-full min-h-9 items-center justify-center rounded px-1 py-2 text-center text-xs font-bold leading-tight;
+    @apply flex h-full min-h-10 items-center justify-center rounded px-1 py-1.5 text-center text-xs font-bold leading-tight;
+  }
+  /* A phone card's week tile also shows its days, on a line of its own. */
+  .schedule-cell-tile {
+    @apply min-h-12 flex-col;
   }
   .schedule-cell-on {
     @apply bg-navy text-white;

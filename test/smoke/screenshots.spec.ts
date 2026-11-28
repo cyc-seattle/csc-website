@@ -28,7 +28,7 @@ for (const [name, path] of pages) {
 // Close-ups of each schedule at twice the size, to check its gaps and stripes.
 const schedules = [
   ["summer-schedule", "/program-category/summer-camp", ".card:has(> .schedule-title)", ".card:has(.schedule-cell)"],
-  ["summer-board", "/program-category/summer-camp", "#summary-board .card", "#summary-board .card"],
+  ["summer-board", "/program-category/summer-camp", "#summary-board", "#summary-board"],
 ] as const;
 for (const [name, path, laptop, phone] of schedules) {
   for (const [size, viewport] of Object.entries(sizes)) {

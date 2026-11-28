@@ -1,13 +1,14 @@
 ---
 // The card a schedule sits in, with its title.
 interface Props {
-  title: string;
+  /** Left out where a heading right above already names the schedule. */
+  title?: string;
   class?: string;
 }
 const { title, class: className } = Astro.props;
 ---
 
 <div class:list={["card p-4", className]}>
-  <p class="schedule-title">{title}</p>
+  {title && <p class="schedule-title">{title}</p>}
   <slot />
 </div>

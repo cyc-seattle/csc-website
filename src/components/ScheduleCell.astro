@@ -11,7 +11,7 @@ const { row, days } = Astro.props;
 const state = row === undefined ? "off" : row.left === 0 ? "full" : "on";
 ---
 
-<span class:list={["schedule-cell", `schedule-cell-${state}`, days && "flex-col"]}>
+<span class:list={["schedule-cell", `schedule-cell-${state}`, days && "schedule-cell-tile"]}>
   {days && <span class:list={["font-normal", state === "on" ? "text-white/75" : "text-slate-500"]}>{days}</span>}
   {row ? weekSpots(row) : <span class="sr-only">No camp</span>}
 </span>
