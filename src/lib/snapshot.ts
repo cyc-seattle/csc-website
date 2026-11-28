@@ -110,6 +110,17 @@ export interface OfferingRow {
   confirmed_count: number;
 }
 
+/** One weekday an offering meets, and its times: a row of the offering's schedule. */
+export interface OfferingScheduleRow {
+  id: Id;
+  offering_id: Id;
+  /** 1 is Monday, 7 is Sunday. */
+  weekday: number;
+  /** Such as "16:15:00". */
+  start_time: string;
+  end_time: string;
+}
+
 /** What families sign up on at once, such as 2027 Summer Sailing Camps: one Clubspot camp. */
 export interface RegistrationFormRow {
   id: Id;
@@ -247,6 +258,7 @@ export interface Snapshot {
   website_sponsors: SponsorRow[];
   programs: CatalogProgramRow[];
   offerings: OfferingRow[];
+  offering_schedule: OfferingScheduleRow[];
   registration_forms: RegistrationFormRow[];
   clubspot_camps: CampRow[];
   files: FileRow[];
@@ -280,6 +292,7 @@ export const collections = [
   "website_sponsors",
   "programs",
   "offerings",
+  "offering_schedule",
   "registration_forms",
   "clubspot_camps",
 ] as const satisfies readonly Exclude<keyof Snapshot, "files">[];

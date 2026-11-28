@@ -1,13 +1,19 @@
 ---
-// A category's programs: their cards side by side, then, for camps sold by the week, one schedule for the group on a
-// laptop. On a phone each card holds its own weeks instead, so a camp, its weeks and its Register stay together.
+// A category's programs: their cards side by side, then one schedule for the group on a laptop, by week for camps sold
+// by the week, or by month for programs that sell several classes. On a phone each card holds its own instead, so a
+// program, its schedule and its Register stay together.
 import Card from "./Card.astro";
 import RegisterButton from "./RegisterButton.astro";
 import ScheduleBox from "./ScheduleBox.astro";
+import MonthBoxes from "./MonthBoxes.astro";
+import MonthCalendar from "./MonthCalendar.astro";
 import WeekRows from "./WeekRows.astro";
 import WeekSchedule from "./WeekSchedule.astro";
 import {
+  classCalendar,
   datesSummary,
+  monthName,
+  dollars,
   programAction,
   weekPrice,
   weekSchedule,
@@ -28,6 +34,12 @@ interface Props {
 }
 const { title, ages, programs, status, weeks } = Astro.props;
 const schedule = weekSchedule(programs, weeks);
+// A category whose camps go by the week has no classes.
+const calendar = weeks ? undefined : classCalendar(programs);
+const classPrice = (p: Program) => {
+  const prices = [...new Set(p.dates.flatMap((g) => g.rows).map((r) => r.priceCents))].filter((c) => c !== null);
+  return prices.length === 0 ? "" : `${prices.length > 1 ? "from " : ""}${dollars(Math.min(...prices))} a class`;
+};
 const register = (p: Program) => {
   const action = programAction(p, status);
   return action.label === "Register" ? action.href : undefined;
@@ -50,10 +62,11 @@ const one = programs.length === 1;
   <div class:list={["grid gap-6", !one && "sm:grid-cols-2 lg:grid-cols-3"]}>
     {programs.map((p) => {
       const row = schedule?.rows.find((r) => r.program === p);
+      const classesOf = calendar?.rows.filter((r) => r.program === p) ?? [];
       const dates = datesSummary(p);
       return (
         <Card title={p.title} image={p.cardImage} href={`/program/${p.slug}`} kicker={p.ages || p.subtitle} wide={one}>
-          {!row && dates && <p class="font-bold text-navy">{dates}</p>}
+          {!row && classesOf.length === 0 && dates && <p class="font-bold text-navy">{dates}</p>}
           <p class="flex-1 leading-relaxed">{p.summary}</p>
           {row ? (
             <div class="mt-2 space-y-2 border-t border-line pt-3 lg:hidden">
@@ -62,6 +75,14 @@ const one = programs.length === 1;
                 <RegisterButton href={register(p)} class="px-3.5 py-1.5 text-sm" />
               </div>
               <WeekRows weeks={schedule!.weeks} cells={row.cells} />
+            </div>
+          ) : classesOf.length > 0 ? (
+            <div class="mt-2 space-y-2 border-t border-line pt-3 lg:hidden">
+              <div class="flex items-center justify-between gap-2">
+                <p class="text-[13px] font-bold text-navy">{classPrice(p)}</p>
+                <RegisterButton href={register(p)} class="px-3.5 py-1.5 text-sm" />
+              </div>
+              <MonthBoxes months={calendar!.months} rows={classesOf} />
             </div>
           ) : (
             <RegisterButton href={register(p)} class="self-start" />
@@ -73,6 +94,14 @@ const one = programs.length === 1;
   {schedule && (
     <ScheduleBox title="Spots left by week" class="mt-5 hidden lg:block">
       <WeekSchedule schedule={schedule} detail={weekPrice} register={register} />
+    </ScheduleBox>
+  )}
+  {calendar && (
+    <ScheduleBox
+      title={`Classes · ${monthName(calendar.months[0]!)} – ${monthName(calendar.months.at(-1)!)}`}
+      class="mt-5 hidden lg:block"
+    >
+      <MonthCalendar calendar={calendar} detail={classPrice} register={register} />
     </ScheduleBox>
   )}
 </div>

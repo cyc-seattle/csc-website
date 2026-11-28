@@ -1,17 +1,36 @@
 ---
-// One week's or day's cell in a schedule: navy with spots left, gray when full, or striped when nothing runs.
-import { weekSpots, type DateRow } from "../lib/content.ts";
+// One cell in a schedule, the same height as its schedule's other cells whatever it holds. A week's cell shows its
+// spots left, or Full; a class's cell shows its dates, time and spots; and a week or month with nothing on is striped.
+import { dayRange, meetingTimes, weekSpots, type DateRow } from "../lib/content.ts";
 
 interface Props {
-  row: DateRow | undefined;
-  /** The week's days, written in the cell where no column heading says them, as on a phone card. */
-  days?: string | undefined;
+  /** A week's offering, or undefined in a week it doesn't run. */
+  row?: DateRow | undefined;
+  /** A class in a month calendar, or null in a month with no class of its kind. */
+  classRow?: DateRow | null | undefined;
+  /** A label of its own, on a phone card where no column heading says it: a week's days. */
+  label?: string | undefined;
 }
-const { row, days } = Astro.props;
-const state = row === undefined ? "off" : row.left === 0 ? "full" : "on";
+const { row, classRow, label } = Astro.props;
+const course = classRow !== undefined;
+const offering = course ? classRow : row;
+const state = !offering ? "off" : offering.left === 0 ? "full" : "on";
+const size = course ? "schedule-cell-class" : label ? "schedule-cell-tile" : undefined;
+const times = classRow?.schedule[0] ? meetingTimes(classRow.schedule[0]) : undefined;
 ---
 
-<span class:list={["schedule-cell", `schedule-cell-${state}`, days && "schedule-cell-tile"]}>
-  {days && <span class:list={["font-normal", state === "on" ? "text-white/75" : "text-slate-500"]}>{days}</span>}
-  {row ? weekSpots(row) : <span class="sr-only">No camp</span>}
+<span class:list={["schedule-cell", `schedule-cell-${state}`, size]}>
+  {label && <span class:list={["font-normal", state === "on" ? "text-white/75" : "text-slate-500"]}>{label}</span>}
+  {course && classRow && <span>{dayRange(classRow.startsOn, classRow.endsOn)}</span>}
+  {times ? (
+    // A time breaks only after its dash, never inside either half.
+    <span class:list={[course && "font-normal"]}>
+      <span class="whitespace-nowrap">{times[0]}–</span>
+      <wbr />
+      <span class="whitespace-nowrap">{times[1]}</span>
+    </span>
+  ) : (
+    !offering && <span class="sr-only">{course ? "No class" : "No camp"}</span>
+  )}
+  {offering && weekSpots(offering) && <span>{weekSpots(offering)}</span>}
 </span>

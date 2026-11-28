@@ -1,0 +1,63 @@
+---
+// A group's classes on a laptop: months across, a row per program and kind of class (Tue & Thu or Wednesdays before
+// Sat & Sun), each class in the month it starts, and Register at the end of each program's rows.
+import RegisterButton from "./RegisterButton.astro";
+import ScheduleCell from "./ScheduleCell.astro";
+import { monthName, type ClassCalendar, type Program } from "../lib/content.ts";
+
+interface Props {
+  calendar: ClassCalendar;
+  detail: (program: Program) => string;
+  register: (program: Program) => string | undefined;
+}
+const { calendar, detail, register } = Astro.props;
+const span = (p: Program) => calendar.rows.filter((r) => r.program === p).length;
+---
+
+<table class="w-full table-fixed border-separate border-spacing-1">
+  <thead>
+    <tr>
+      <th class="w-48"></th>
+      <th class="w-28"></th>
+      {calendar.months.map((m) => (
+        <th class="month-heading">{monthName(m)}</th>
+      ))}
+      <th class="w-28"></th>
+    </tr>
+  </thead>
+  <tbody>
+    {calendar.rows.map((r, i) => {
+      const first = calendar.rows.findIndex((x) => x.program === r.program) === i;
+      return (
+        <tr>
+          {first && (
+            <th scope="rowgroup" rowspan={span(r.program)} class="pr-3 text-left align-middle">
+              <span class="block text-[15px] font-black text-navy">{r.program.title}</span>
+              <span class="text-xs font-bold text-signal">{detail(r.program)}</span>
+            </th>
+          )}
+          <th scope="row" class="px-1 text-left align-middle text-xs font-bold text-slate-500">
+            {r.kind}
+          </th>
+          {r.cells.map((classes) => (
+            // A height lets each cell stretch to its row; a month with two classes of a kind stacks them.
+            <td class="h-px align-top">
+              <div class="flex h-full flex-col gap-1">
+                {classes.length > 0 ? (
+                  classes.map((c) => <ScheduleCell classRow={c} />)
+                ) : (
+                  <ScheduleCell classRow={null} />
+                )}
+              </div>
+            </td>
+          ))}
+          {first && (
+            <td rowspan={span(r.program)} class="text-right align-middle">
+              <RegisterButton href={register(r.program)} />
+            </td>
+          )}
+        </tr>
+      );
+    })}
+  </tbody>
+</table>
