@@ -1,0 +1,38 @@
+---
+// A category's or program's registration notice: full width, with a red bar on its left.
+import { longDay, type Status } from "../lib/content.ts";
+
+interface Props {
+  status: Status;
+  /** When registration opens, as `YYYY-MM-DD`, if that's known. */
+  opensOn?: string | undefined;
+}
+const { status, opensOn } = Astro.props;
+---
+
+{status !== "open" && (
+  <div class="mx-auto max-w-6xl px-4 pt-8">
+    <div class="card flex flex-col gap-3 border-l-[5px] border-l-signal px-5 py-4 sm:flex-row sm:items-center sm:gap-5">
+      {status === "closed" && (
+        <span class="self-start rounded border border-signal px-2 py-0.5 text-[11px] font-black uppercase tracking-wider text-signal sm:self-center">
+          Closed
+        </span>
+      )}
+      <div class="flex-1">
+        <h2 class="text-lg font-black text-navy">{status === "coming_soon" ? "Coming soon" : "On the horizon"}</h2>
+        <p class="text-[15px] text-slate-600">
+          {status === "coming_soon" && opensOn
+            ? `Registration opens ${longDay(opensOn)}. Sign up for our newsletter, and we'll remind you.`
+            : `${
+                status === "coming_soon"
+                  ? "Registration for this program opens soon."
+                  : "Registration for this program is closed for the season."
+              } Sign up for our newsletter to be the first to know when registration opens.`}
+        </p>
+      </div>
+      <a class="button-quiet self-start sm:self-center" href="/newsletter">
+        Sign up for updates
+      </a>
+    </div>
+  </div>
+)}

@@ -73,8 +73,8 @@ Every word and picture on the site comes from Directus. Change content there, no
   Listmonk's signup form, which sends a confirmation email. Each sends the visitor back to a page here, such as
   `/contact-us/sent`, which search engines and the sitemap leave out. A change to `src/scripts/join-name.js` changes
   its hash in `firebase.json` too; `test/forms.test.ts` checks the two match.
-- `src/components/` holds the parts pages share, such as `Header.astro` with the menu, `Footer.astro` and
-  `SectionHeading.astro`. Every page uses the same one, so a repeated piece is never drawn twice
+- `src/components/` holds the parts pages share, such as `Header.astro` with the menu, `Footer.astro`,
+  `SectionHeading.astro`, `Card.astro` (programs, categories and page sections), `Notice.astro` and `Person.astro`. Every page uses the same one, so a repeated piece is never drawn twice
   ([cyc-seattle/csc-website#18](https://github.com/cyc-seattle/csc-website/issues/18)). `src/layouts/Base.astro` holds
   each page's frame and its search and link-preview tags. `src/styles/global.css` holds the colors and the card and
   button styles.
